@@ -2,95 +2,116 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* BrindaRani Design System - Spiritual E-Commerce */
+/* All colors in HSL format */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Brand Colors - Warm Spiritual Palette */
+    --background: 45 33% 97%;
+    --foreground: 25 30% 12%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 45 40% 99%;
+    --card-foreground: 25 30% 12%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 45 40% 99%;
+    --popover-foreground: 25 30% 12%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Saffron Gold - Primary */
+    --primary: 35 85% 55%;
+    --primary-foreground: 45 40% 99%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Temple Maroon - Secondary */
+    --secondary: 350 45% 35%;
+    --secondary-foreground: 45 40% 99%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Cream & Muted */
+    --muted: 40 25% 92%;
+    --muted-foreground: 25 15% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Sacred Green - Accent */
+    --accent: 145 35% 40%;
+    --accent-foreground: 45 40% 99%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 45 40% 99%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 35 25% 88%;
+    --input: 35 25% 88%;
+    --ring: 35 85% 55%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Extended Palette */
+    --sacred-gold: 42 90% 60%;
+    --sacred-gold-light: 45 70% 85%;
+    --temple-maroon: 350 45% 35%;
+    --temple-maroon-light: 350 30% 65%;
+    --lotus-pink: 330 50% 70%;
+    --tulsi-green: 145 40% 45%;
+    --tulsi-green-light: 145 35% 75%;
+    --cream-white: 45 40% 99%;
+    --warm-gray: 30 10% 60%;
+    --deep-brown: 25 30% 18%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(35 85% 55% / 0.1) 0%, hsl(350 45% 35% / 0.1) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(42 90% 60%) 0%, hsl(35 85% 55%) 100%);
+    --gradient-warm: linear-gradient(180deg, hsl(45 33% 97%) 0%, hsl(40 25% 92%) 100%);
+    --gradient-sacred: linear-gradient(135deg, hsl(350 45% 35%) 0%, hsl(25 30% 18%) 100%);
 
-    --sidebar-primary: 240 5.9% 10%;
+    /* Shadows */
+    --shadow-soft: 0 2px 8px -2px hsl(25 30% 12% / 0.08);
+    --shadow-medium: 0 4px 16px -4px hsl(25 30% 12% / 0.12);
+    --shadow-large: 0 8px 32px -8px hsl(25 30% 12% / 0.16);
+    --shadow-glow: 0 0 24px hsl(35 85% 55% / 0.25);
 
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Admin Sidebar */
+    --sidebar-background: 25 30% 12%;
+    --sidebar-foreground: 45 40% 95%;
+    --sidebar-primary: 35 85% 55%;
+    --sidebar-primary-foreground: 25 30% 12%;
+    --sidebar-accent: 25 25% 20%;
+    --sidebar-accent-foreground: 45 40% 95%;
+    --sidebar-border: 25 20% 25%;
+    --sidebar-ring: 35 85% 55%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 25 30% 8%;
+    --foreground: 45 33% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 25 25% 12%;
+    --card-foreground: 45 33% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 25 25% 12%;
+    --popover-foreground: 45 33% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 35 85% 55%;
+    --primary-foreground: 25 30% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 350 35% 45%;
+    --secondary-foreground: 45 40% 99%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 25 20% 18%;
+    --muted-foreground: 40 15% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 145 35% 45%;
+    --accent-foreground: 45 40% 99%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 65% 45%;
+    --destructive-foreground: 45 40% 99%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 25 20% 22%;
+    --input: 25 20% 22%;
+    --ring: 35 85% 55%;
+
+    --sidebar-background: 25 30% 6%;
+    --sidebar-foreground: 45 40% 95%;
+    --sidebar-accent: 25 25% 15%;
+    --sidebar-border: 25 20% 18%;
   }
 }
 
@@ -100,6 +121,210 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+@layer components {
+  /* Premium Button Variants */
+  .btn-sacred {
+    @apply bg-gradient-to-r from-primary to-secondary text-primary-foreground 
+           shadow-md hover:shadow-lg transition-all duration-300 
+           hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  .btn-gold {
+    @apply bg-gradient-to-r from-[hsl(var(--sacred-gold))] to-primary 
+           text-primary-foreground shadow-md hover:shadow-lg 
+           transition-all duration-300;
+  }
+
+  .btn-outline-sacred {
+    @apply border-2 border-primary bg-transparent text-primary
+           hover:bg-primary hover:text-primary-foreground
+           transition-all duration-300;
+  }
+
+  /* Card Styles */
+  .card-premium {
+    @apply bg-card rounded-xl border border-border/50 
+           shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)]
+           transition-all duration-300;
+  }
+
+  .card-product {
+    @apply card-premium hover:scale-[1.02] hover:border-primary/30
+           cursor-pointer overflow-hidden;
+  }
+
+  /* Badge Variants */
+  .badge-trending {
+    @apply bg-gradient-to-r from-primary to-[hsl(var(--sacred-gold))] 
+           text-primary-foreground text-xs font-medium px-2.5 py-0.5 rounded-full;
+  }
+
+  .badge-new {
+    @apply bg-accent text-accent-foreground text-xs font-medium 
+           px-2.5 py-0.5 rounded-full;
+  }
+
+  .badge-sale {
+    @apply bg-secondary text-secondary-foreground text-xs font-medium 
+           px-2.5 py-0.5 rounded-full;
+  }
+
+  /* Input Styles */
+  .input-sacred {
+    @apply w-full px-4 py-3 rounded-lg border border-border 
+           bg-background/50 backdrop-blur-sm
+           focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary
+           transition-all duration-200 placeholder:text-muted-foreground;
+  }
+
+  /* Navbar */
+  .navbar-glass {
+    @apply bg-background/80 backdrop-blur-md border-b border-border/50
+           sticky top-0 z-50;
+  }
+
+  /* Hero Section */
+  .hero-overlay {
+    @apply absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-transparent;
+  }
+
+  /* Section Titles */
+  .section-title {
+    @apply text-3xl md:text-4xl font-serif font-semibold text-foreground
+           relative inline-block;
+  }
+
+  .section-title::after {
+    @apply content-[''] absolute -bottom-2 left-0 w-16 h-1 
+           bg-gradient-to-r from-primary to-secondary rounded-full;
+  }
+
+  /* Admin Styles */
+  .admin-card {
+    @apply bg-card rounded-xl border border-border p-6 
+           shadow-[var(--shadow-soft)];
+  }
+
+  .admin-stat-card {
+    @apply admin-card hover:shadow-[var(--shadow-medium)] 
+           transition-all duration-300 cursor-pointer;
+  }
+
+  /* Table Styles */
+  .table-premium {
+    @apply w-full border-collapse;
+  }
+
+  .table-premium th {
+    @apply text-left text-sm font-medium text-muted-foreground 
+           uppercase tracking-wider py-3 px-4 border-b border-border;
+  }
+
+  .table-premium td {
+    @apply py-4 px-4 border-b border-border/50;
+  }
+
+  .table-premium tr:hover {
+    @apply bg-muted/30;
+  }
+
+  /* Skeleton Loading */
+  .skeleton {
+    @apply animate-pulse bg-muted rounded;
+  }
+
+  /* Scrollbar */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Animations */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .font-serif {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  .font-sans {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+
+  .glass-effect {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px hsl(35 85% 55% / 0.2);
+  }
+  to {
+    box-shadow: 0 0 30px hsl(35 85% 55% / 0.4);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
