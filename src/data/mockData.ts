@@ -35,6 +35,9 @@ export interface User {
   phone: string;
   address: string;
   city: string;
+  district: string;
+  state: string;
+  country: string;
   pincode: string;
   avatar: string;
   isBlocked: boolean;
@@ -273,6 +276,9 @@ export const users: User[] = [
     phone: '+91 98765 43210',
     address: '123, Temple Street',
     city: 'Vrindavan',
+    district: 'Mathura',
+    state: 'Uttar Pradesh',
+    country: 'India',
     pincode: '281121',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80',
     isBlocked: false,
@@ -285,6 +291,9 @@ export const users: User[] = [
     phone: '+91 87654 32109',
     address: '456, Krishna Nagar',
     city: 'Mathura',
+    district: 'Mathura',
+    state: 'Uttar Pradesh',
+    country: 'India',
     pincode: '281001',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80',
     isBlocked: false,
@@ -297,6 +306,9 @@ export const users: User[] = [
     phone: '+91 76543 21098',
     address: '789, Radha Kunj',
     city: 'Delhi',
+    district: 'New Delhi',
+    state: 'Delhi',
+    country: 'India',
     pincode: '110001',
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80',
     isBlocked: false,

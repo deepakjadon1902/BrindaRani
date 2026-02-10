@@ -14,6 +14,13 @@ const RegisterPage = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
+    address: '',
+    city: '',
+    district: '',
+    state: '',
+    country: 'India',
+    pincode: '',
     password: '',
     confirmPassword: '',
   });
@@ -43,7 +50,15 @@ const RegisterPage = () => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 800));
     
-    const success = register(formData.name, formData.email, formData.password);
+    const success = register(formData.name, formData.email, formData.password, {
+      phone: formData.phone,
+      address: formData.address,
+      city: formData.city,
+      district: formData.district,
+      state: formData.state,
+      country: formData.country,
+      pincode: formData.pincode,
+    });
     
     if (success) {
       toast.success('Account created successfully!', {
@@ -91,6 +106,91 @@ const RegisterPage = () => {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="mt-1 input-sacred"
               />
+            </div>
+
+            <div>
+              <Label htmlFor="phone">Phone Number *</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="+91 98765 43210"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className="mt-1 input-sacred"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="address">Address *</Label>
+              <Input
+                id="address"
+                type="text"
+                placeholder="Street address, house number"
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                className="mt-1 input-sacred"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="city">City *</Label>
+                <Input
+                  id="city"
+                  type="text"
+                  placeholder="City"
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  className="mt-1 input-sacred"
+                />
+              </div>
+              <div>
+                <Label htmlFor="district">District *</Label>
+                <Input
+                  id="district"
+                  type="text"
+                  placeholder="District"
+                  value={formData.district}
+                  onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                  className="mt-1 input-sacred"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="state">State *</Label>
+                <Input
+                  id="state"
+                  type="text"
+                  placeholder="State"
+                  value={formData.state}
+                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                  className="mt-1 input-sacred"
+                />
+              </div>
+              <div>
+                <Label htmlFor="country">Country *</Label>
+                <Input
+                  id="country"
+                  type="text"
+                  placeholder="Country"
+                  value={formData.country}
+                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                  className="mt-1 input-sacred"
+                />
+              </div>
+              <div>
+                <Label htmlFor="pincode">Pincode *</Label>
+                <Input
+                  id="pincode"
+                  type="text"
+                  placeholder="Pincode"
+                  value={formData.pincode}
+                  onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+                  className="mt-1 input-sacred"
+                />
+              </div>
             </div>
 
             <div>
