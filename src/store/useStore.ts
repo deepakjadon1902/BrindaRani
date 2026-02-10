@@ -22,6 +22,9 @@ interface AuthState {
     phone: string;
     address: string;
     city: string;
+    district: string;
+    state: string;
+    country: string;
     pincode: string;
     avatar: string;
   } | null;
@@ -32,7 +35,7 @@ interface StoreState {
   // Auth
   auth: AuthState;
   login: (email: string, password: string, isAdmin?: boolean) => boolean;
-  register: (name: string, email: string, password: string) => boolean;
+  register: (name: string, email: string, password: string, extra?: { phone?: string; address?: string; city?: string; district?: string; state?: string; country?: string; pincode?: string }) => boolean;
   logout: () => void;
 
   // Products
@@ -104,6 +107,9 @@ export const useStore = create<StoreState>()(
                   phone: '+91 98765 43210',
                   address: 'Admin Office',
                   city: 'Vrindavan',
+                  district: 'Mathura',
+                  state: 'Uttar Pradesh',
+                  country: 'India',
                   pincode: '281121',
                   avatar: '',
                 },
@@ -130,15 +136,18 @@ export const useStore = create<StoreState>()(
         return false;
       },
 
-      register: (name: string, email: string, _password: string) => {
+      register: (name: string, email: string, _password: string, extra?: { phone?: string; address?: string; city?: string; district?: string; state?: string; country?: string; pincode?: string }) => {
         const newUser: User = {
           id: `user-${Date.now()}`,
           name,
           email,
-          phone: '',
-          address: '',
-          city: '',
-          pincode: '',
+          phone: extra?.phone || '',
+          address: extra?.address || '',
+          city: extra?.city || '',
+          district: extra?.district || '',
+          state: extra?.state || '',
+          country: extra?.country || 'India',
+          pincode: extra?.pincode || '',
           avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
           isBlocked: false,
           createdAt: new Date().toISOString().split('T')[0],

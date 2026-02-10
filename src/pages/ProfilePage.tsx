@@ -17,6 +17,9 @@ const ProfilePage = () => {
     phone: auth.user?.phone || '',
     address: auth.user?.address || '',
     city: auth.user?.city || '',
+    district: auth.user?.district || '',
+    state: auth.user?.state || '',
+    country: auth.user?.country || '',
     pincode: auth.user?.pincode || '',
   });
 
@@ -131,6 +134,42 @@ const ProfilePage = () => {
                   <Input
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    disabled={!isEditing}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>City</Label>
+                  <Input
+                    value={formData.city}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    disabled={!isEditing}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>District</Label>
+                  <Input
+                    value={formData.district}
+                    onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                    disabled={!isEditing}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>State</Label>
+                  <Input
+                    value={formData.state}
+                    onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                    disabled={!isEditing}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>Country</Label>
+                  <Input
+                    value={formData.country}
+                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                     disabled={!isEditing}
                     className="mt-1"
                   />

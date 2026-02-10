@@ -22,6 +22,9 @@ const CheckoutPage = () => {
     phone: auth.user?.phone || '',
     address: auth.user?.address || '',
     city: auth.user?.city || '',
+    district: auth.user?.district || '',
+    state: auth.user?.state || '',
+    country: auth.user?.country || 'India',
     pincode: auth.user?.pincode || '',
     paymentMethod: 'upi',
   });
@@ -61,7 +64,7 @@ const CheckoutPage = () => {
         total,
         status: 'paid' as const,
         paymentMethod: formData.paymentMethod.toUpperCase(),
-        address: `${formData.address}, ${formData.city} - ${formData.pincode}`,
+        address: `${formData.address}, ${formData.city}, ${formData.district}, ${formData.state}, ${formData.country} - ${formData.pincode}`,
         createdAt: new Date().toISOString().split('T')[0],
       };
 
@@ -170,6 +173,30 @@ const CheckoutPage = () => {
                       <Input
                         value={formData.city}
                         onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                        className="mt-1 input-sacred"
+                      />
+                    </div>
+                    <div>
+                      <Label>District *</Label>
+                      <Input
+                        value={formData.district}
+                        onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                        className="mt-1 input-sacred"
+                      />
+                    </div>
+                    <div>
+                      <Label>State *</Label>
+                      <Input
+                        value={formData.state}
+                        onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                        className="mt-1 input-sacred"
+                      />
+                    </div>
+                    <div>
+                      <Label>Country *</Label>
+                      <Input
+                        value={formData.country}
+                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                         className="mt-1 input-sacred"
                       />
                     </div>
