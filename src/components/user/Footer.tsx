@@ -14,44 +14,6 @@ const Footer = () => {
     content: React.ReactNode;
   } | null>(null);
 
-  const aboutContent = (
-    <div className="space-y-4 text-muted-foreground">
-      <p>
-        <strong className="text-foreground">BrindaRani</strong> is a spiritual e-commerce platform 
-        dedicated to bringing authentic, satvik products from the holy land of Vrindavan to devotees worldwide.
-      </p>
-      <p>
-        Our mission is to provide high-quality puja items, deity accessories, and spiritual goods 
-        that are sourced directly from skilled artisans and trusted suppliers in Vrindavan and Mathura.
-      </p>
-      <p>
-        Every product in our collection is blessed with devotion and crafted with traditional 
-        techniques passed down through generations.
-      </p>
-    </div>
-  );
-
-  const contactContent = (
-    <div className="space-y-4 text-muted-foreground">
-      <div>
-        <h4 className="font-medium text-foreground mb-1">Address</h4>
-        <p>Temple Street, Vrindavan<br />Mathura, Uttar Pradesh - 281121</p>
-      </div>
-      <div>
-        <h4 className="font-medium text-foreground mb-1">Email</h4>
-        <p>support@brindaRani.com</p>
-      </div>
-      <div>
-        <h4 className="font-medium text-foreground mb-1">Phone</h4>
-        <p>+91 98765 43210</p>
-      </div>
-      <div>
-        <h4 className="font-medium text-foreground mb-1">Working Hours</h4>
-        <p>Monday - Saturday: 9:00 AM - 8:00 PM<br />Sunday: 10:00 AM - 6:00 PM</p>
-      </div>
-    </div>
-  );
-
   const termsContent = (
     <div className="space-y-4 text-muted-foreground text-sm">
       <section>
@@ -149,20 +111,14 @@ const Footer = () => {
               <h4 className="font-semibold mb-4 text-background">Information</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <button 
-                    onClick={() => setModalContent({ title: 'About Us', content: aboutContent })}
-                    className="text-background/70 hover:text-primary transition-colors"
-                  >
+                  <Link to="/about" className="text-background/70 hover:text-primary transition-colors">
                     About Us
-                  </button>
+                  </Link>
                 </li>
                 <li>
-                  <button 
-                    onClick={() => setModalContent({ title: 'Contact Us', content: contactContent })}
-                    className="text-background/70 hover:text-primary transition-colors"
-                  >
+                  <Link to="/contact" className="text-background/70 hover:text-primary transition-colors">
                     Contact Us
-                  </button>
+                  </Link>
                 </li>
                 <li>
                   <button 

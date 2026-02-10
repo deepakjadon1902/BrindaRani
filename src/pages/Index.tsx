@@ -2,47 +2,24 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import HeroSection from '@/components/user/HeroSection';
-import CategoryCard from '@/components/user/CategoryCard';
+import CategoryIconBar from '@/components/user/CategoryIconBar';
 import ProductCard from '@/components/user/ProductCard';
 import CustomDesignSection from '@/components/user/CustomDesignSection';
 import { Button } from '@/components/ui/button';
 
 const Index = () => {
-  const { products, categories } = useStore();
+  const { products } = useStore();
 
   const trendingProducts = products.filter(p => p.isTrending).slice(0, 4);
   const latestProducts = products.filter(p => p.isLatest).slice(0, 4);
 
   return (
     <div>
+      {/* Categories Icon Bar - Above Hero */}
+      <CategoryIconBar />
+
       {/* Hero Section */}
       <HeroSection />
-
-      {/* Categories Section */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <span className="text-sm text-primary font-medium uppercase tracking-wider mb-2 block">
-                Explore
-              </span>
-              <h2 className="section-title">Shop by Category</h2>
-            </div>
-            <Link 
-              to="/products" 
-              className="hidden md:flex items-center gap-2 text-primary hover:underline"
-            >
-              View All <ArrowRight size={18} />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.slice(0, 6).map((category) => (
-              <CategoryCard key={category.id} category={category} />
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Promotional Banner */}
       <section className="py-12 bg-gradient-sacred">
