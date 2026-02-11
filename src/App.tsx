@@ -23,6 +23,7 @@ import ProfilePage from "./pages/ProfilePage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import NotFound from "./pages/NotFound";
+import CustomDesignPage from "./pages/CustomDesignPage";
 
 // Admin Pages
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
@@ -63,6 +64,7 @@ const App = () => (
             <Route path="profile" element={<ProfilePage />} />
             <Route path="about" element={<AboutPage />} />
             <Route path="contact" element={<ContactPage />} />
+            <Route path="custom-design" element={<CustomDesignPage />} />
           </Route>
 
           {/* Admin Routes */}
