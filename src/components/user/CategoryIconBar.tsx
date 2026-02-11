@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Flame, Crown, Sparkles, Shirt, BookOpen, Home } from 'lucide-react';
+import { Flame, Crown, Sparkles, Shirt, BookOpen, Home, Wind, Circle, Gem, Gift } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 
 const categoryIcons: Record<string, React.ElementType> = {
@@ -9,6 +9,10 @@ const categoryIcons: Record<string, React.ElementType> = {
   'Dress & Accessories': Shirt,
   'Books & Media': BookOpen,
   'Home Decor': Home,
+  'Havan Samagri': Wind,
+  'Rudraksha': Circle,
+  'Gemstones': Gem,
+  'Spiritual Gifts': Gift,
 };
 
 const CategoryIconBar = () => {
