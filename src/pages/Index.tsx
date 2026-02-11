@@ -15,11 +15,11 @@ const Index = () => {
 
   return (
     <div>
-      {/* Categories Icon Bar - Above Hero */}
-      <CategoryIconBar />
-
       {/* Hero Section */}
       <HeroSection />
+
+      {/* Categories Icon Bar - Below Hero */}
+      <CategoryIconBar />
 
       {/* Promotional Banner */}
       <section className="py-12 bg-gradient-sacred">

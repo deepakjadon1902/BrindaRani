@@ -6,8 +6,7 @@ import {
   ShoppingCart, 
   User, 
   Menu, 
-  X,
-  ChevronDown
+  X
 } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { Button } from '@/components/ui/button';
@@ -19,6 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import CategoryNavBar from '@/components/user/CategoryNavBar';
 import { Badge } from '@/components/ui/badge';
 import Footer from '@/components/user/Footer';
 
@@ -33,8 +33,7 @@ const UserLayout = () => {
     cart, 
     wishlist, 
     searchQuery, 
-    setSearchQuery,
-    categories 
+    setSearchQuery
   } = useStore();
 
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
@@ -77,20 +76,12 @@ const UserLayout = () => {
                 Home
               </Link>
               
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1 text-foreground/80 hover:text-primary transition-colors font-medium">
-                  Categories <ChevronDown size={16} />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  {categories.map((category) => (
-                    <DropdownMenuItem key={category.id} asChild>
-                      <Link to={`/category/${encodeURIComponent(category.name)}`}>
-                        {category.name}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Link 
+                to="/custom-design" 
+                className="text-foreground/80 hover:text-primary transition-colors font-medium"
+              >
+                Custom Design
+              </Link>
 
               <Link 
                 to="/products" 
@@ -243,16 +234,13 @@ const UserLayout = () => {
               >
                 All Products
               </Link>
-              {categories.map((category) => (
-                <Link 
-                  key={category.id}
-                  to={`/category/${encodeURIComponent(category.name)}`}
-                  className="py-2 text-foreground/80 hover:text-primary pl-4"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {category.name}
-                </Link>
-              ))}
+              <Link 
+                to="/custom-design" 
+                className="py-2 text-foreground/80 hover:text-primary"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Custom Design
+              </Link>
               {!auth.isAuthenticated && (
                 <>
                   <div className="border-t border-border my-2" />
@@ -276,6 +264,9 @@ const UserLayout = () => {
           </div>
         )}
       </header>
+
+      {/* Category Nav Bar */}
+      <CategoryNavBar />
 
       {/* Main Content */}
       <main className="flex-1">
