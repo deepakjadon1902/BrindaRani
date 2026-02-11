@@ -115,6 +115,30 @@ export const categories: Category[] = [
     name: 'Home Decor',
     image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80',
     subcategories: ['Wall Hangings', 'Photo Frames', 'Rangoli', 'Torans']
+  },
+  {
+    id: 'cat-7',
+    name: 'Havan Samagri',
+    image: 'https://images.unsplash.com/photo-1609766856923-7e0a0c06117b?w=400&q=80',
+    subcategories: ['Havan Kund', 'Samagri Packs', 'Ghee & Oils', 'Sacred Wood']
+  },
+  {
+    id: 'cat-8',
+    name: 'Rudraksha',
+    image: 'https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?w=400&q=80',
+    subcategories: ['1 Mukhi', '5 Mukhi', 'Rudraksha Mala', 'Rudraksha Bracelets']
+  },
+  {
+    id: 'cat-9',
+    name: 'Gemstones',
+    image: 'https://images.unsplash.com/photo-1551122089-4e3e72477432?w=400&q=80',
+    subcategories: ['Ruby', 'Emerald', 'Yellow Sapphire', 'Pearl']
+  },
+  {
+    id: 'cat-10',
+    name: 'Spiritual Gifts',
+    image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=400&q=80',
+    subcategories: ['Gift Hampers', 'Festival Combos', 'Wedding Gifts', 'Return Gifts']
   }
 ];
 

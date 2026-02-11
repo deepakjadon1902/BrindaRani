@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { X, ArrowRight } from 'lucide-react';
-import { Flame, Crown, Sparkles, Shirt, BookOpen, Home } from 'lucide-react';
+import { Flame, Crown, Sparkles, Shirt, BookOpen, Home, Wind, Circle, Gem, Gift } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import ProductCard from '@/components/user/ProductCard';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,10 @@ const categoryIcons: Record<string, React.ElementType> = {
   'Dress & Accessories': Shirt,
   'Books & Media': BookOpen,
   'Home Decor': Home,
+  'Havan Samagri': Wind,
+  'Rudraksha': Circle,
+  'Gemstones': Gem,
+  'Spiritual Gifts': Gift,
 };
 
 const CategoryNavBar = () => {
