@@ -139,6 +139,66 @@ export const categories: Category[] = [
     name: 'Spiritual Gifts',
     image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=400&q=80',
     subcategories: ['Gift Hampers', 'Festival Combos', 'Wedding Gifts', 'Return Gifts']
+  },
+  {
+    id: 'cat-11',
+    name: 'Tulsi Products',
+    image: 'https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?w=400&q=80',
+    subcategories: ['Tulsi Mala', 'Tulsi Kanthi', 'Tulsi Beads', 'Tulsi Plants']
+  },
+  {
+    id: 'cat-12',
+    name: 'Chandan & Kumkum',
+    image: 'https://images.unsplash.com/photo-1609766856923-7e0a0c06117b?w=400&q=80',
+    subcategories: ['Chandan Tika', 'Kumkum Powder', 'Sindoor', 'Roli']
+  },
+  {
+    id: 'cat-13',
+    name: 'Brass & Copper Items',
+    image: 'https://images.unsplash.com/photo-1590845947670-c009801ffa74?w=400&q=80',
+    subcategories: ['Brass Diyas', 'Copper Lota', 'Brass Bells', 'Panchpatra']
+  },
+  {
+    id: 'cat-14',
+    name: 'Marble & Stone Idols',
+    image: 'https://images.unsplash.com/photo-1567591370504-80142b28f1ec?w=400&q=80',
+    subcategories: ['Marble Ganesh', 'Stone Krishna', 'Marble Lakshmi', 'Marble Shiva']
+  },
+  {
+    id: 'cat-15',
+    name: 'Silver Articles',
+    image: 'https://images.unsplash.com/photo-1551122089-4e3e72477432?w=400&q=80',
+    subcategories: ['Silver Idols', 'Silver Coins', 'Silver Pooja Items', 'Silver Jewelry']
+  },
+  {
+    id: 'cat-16',
+    name: 'Flowers & Garlands',
+    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80',
+    subcategories: ['Artificial Garlands', 'Flower Strings', 'Rose Petals', 'Marigold Garlands']
+  },
+  {
+    id: 'cat-17',
+    name: 'Deity Ornaments',
+    image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&q=80',
+    subcategories: ['Crowns & Mukuts', 'Necklaces', 'Earrings', 'Bangles']
+  },
+  {
+    id: 'cat-18',
+    name: 'Dhoop & Agarbatti',
+    image: 'https://images.unsplash.com/photo-1609766856923-7e0a0c06117b?w=400&q=80',
+    subcategories: ['Dhoop Sticks', 'Agarbatti Packs', 'Dhoop Cones', 'Sambrani']
+  },
+  {
+    id: 'cat-19',
+    name: 'Yantra & Kavach',
+    image: 'https://images.unsplash.com/photo-1545987796-200677ee1011?w=400&q=80',
+    subcategories: ['Shree Yantra', 'Navgraha Yantra', 'Kavach Lockets', 'Protection Yantras']
+  },
+  {
+    id: 'cat-20',
+    name: 'Festival Specials',
+    image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=400&q=80',
+    subcategories: ['Diwali Combos', 'Navratri Specials', 'Janmashtami Items', 'Holi Colors']
   }
 ];
 

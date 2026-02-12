@@ -1,19 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Flame, Crown, Sparkles, Shirt, BookOpen, Home, Wind, Circle, Gem, Gift } from 'lucide-react';
 import { useStore } from '@/store/useStore';
-
-const categoryIcons: Record<string, React.ElementType> = {
-  'Puja Items': Flame,
-  'Idols & Murtis': Crown,
-  'Vrindavan Specials': Sparkles,
-  'Dress & Accessories': Shirt,
-  'Books & Media': BookOpen,
-  'Home Decor': Home,
-  'Havan Samagri': Wind,
-  'Rudraksha': Circle,
-  'Gemstones': Gem,
-  'Spiritual Gifts': Gift,
-};
 
 const CategoryIconBar = () => {
   const { categories } = useStore();
@@ -29,25 +15,17 @@ const CategoryIconBar = () => {
             Shop by Category
           </h2>
         </div>
-        <div className="flex flex-wrap justify-center gap-6 md:gap-10">
-          {categories.map((category) => {
-            const Icon = categoryIcons[category.name] || Sparkles;
-            return (
-              <Link
-                key={category.id}
-                to={`/category/${encodeURIComponent(category.name)}`}
-                className="flex flex-col items-center gap-2 group"
-              >
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/10 flex items-center justify-center
-                              group-hover:bg-primary group-hover:shadow-lg transition-all duration-300">
-                  <Icon className="w-7 h-7 md:w-8 md:h-8 text-primary group-hover:text-primary-foreground transition-colors duration-300" />
-                </div>
-                <span className="text-xs md:text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors text-center max-w-[80px]">
-                  {category.name}
-                </span>
-              </Link>
-            );
-          })}
+        <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+          {categories.map((category) => (
+            <Link
+              key={category.id}
+              to={`/category/${encodeURIComponent(category.name)}`}
+              className="px-4 py-2 rounded-full border border-border text-sm font-medium text-muted-foreground
+                         hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200"
+            >
+              {category.name}
+            </Link>
+          ))}
         </div>
       </div>
     </section>
