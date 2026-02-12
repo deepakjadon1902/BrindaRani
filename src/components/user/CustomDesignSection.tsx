@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { MessageCircle, Send } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { Button } from '@/components/ui/button';
@@ -14,9 +14,10 @@ import {
 import { toast } from 'sonner';
 
 const CustomDesignSection = () => {
-  const { categories, adminSettings } = useStore();
+  const { categories, products, adminSettings } = useStore();
   const [formData, setFormData] = useState({
     category: '',
+    product: '',
     productSize: '',
     quantity: '1',
     message: '',
@@ -26,6 +27,16 @@ const CustomDesignSection = () => {
 
   const sizes = ['Small', 'Medium', 'Large', 'Extra Large', 'Custom Size'];
 
+  // Filter products by selected category
+  const filteredProducts = useMemo(() => {
+    if (!formData.category) return [];
+    return products.filter((p) => p.category === formData.category);
+  }, [formData.category, products]);
+
+  const handleCategoryChange = (value: string) => {
+    setFormData({ ...formData, category: value, product: '' });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -34,7 +45,8 @@ const CustomDesignSection = () => {
       return;
     }
 
-    // Format WhatsApp message
+    const selectedProduct = products.find(p => p.id === formData.product);
+
     const whatsappMessage = `🙏 *Custom Order Request - BrindaRani*
 
 *Customer Details:*
@@ -43,6 +55,7 @@ Phone: ${formData.phone}
 
 *Order Details:*
 Category: ${formData.category}
+${selectedProduct ? `Reference Product: ${selectedProduct.name}` : ''}
 Size: ${formData.productSize}
 Quantity: ${formData.quantity}
 
@@ -52,7 +65,6 @@ ${formData.message}
 ---
 _Sent via BrindaRani Website_`;
 
-    // Open WhatsApp with pre-filled message
     const whatsappUrl = `https://wa.me/${adminSettings.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(whatsappMessage)}`;
     window.open(whatsappUrl, '_blank');
 
@@ -60,9 +72,9 @@ _Sent via BrindaRani Website_`;
       description: 'Your custom order request is ready to send!',
     });
 
-    // Reset form
     setFormData({
       category: '',
+      product: '',
       productSize: '',
       quantity: '1',
       message: '',
@@ -77,8 +89,7 @@ _Sent via BrindaRani Website_`;
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
-            <span className="inline-block px-4 py-1.5 bg-secondary/10 text-secondary rounded-full 
-                         text-sm font-medium mb-4">
+            <span className="inline-block px-4 py-1.5 bg-secondary/10 text-secondary rounded-full text-sm font-medium mb-4">
               ✨ Special Service
             </span>
             <h2 className="section-title text-center mx-auto">
@@ -122,7 +133,7 @@ _Sent via BrindaRani Website_`;
                 <label className="block text-sm font-medium mb-2">Category *</label>
                 <Select
                   value={formData.category}
-                  onValueChange={(value) => setFormData({ ...formData, category: value })}
+                  onValueChange={handleCategoryChange}
                 >
                   <SelectTrigger className="input-sacred">
                     <SelectValue placeholder="Select category" />
@@ -133,6 +144,34 @@ _Sent via BrindaRani Website_`;
                         {cat.name}
                       </SelectItem>
                     ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Product - filtered by category */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Select Product (Optional)
+                </label>
+                <Select
+                  value={formData.product}
+                  onValueChange={(value) => setFormData({ ...formData, product: value })}
+                  disabled={!formData.category}
+                >
+                  <SelectTrigger className="input-sacred">
+                    <SelectValue placeholder={formData.category ? 'Select a product to customise' : 'Select category first'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredProducts.map((prod) => (
+                      <SelectItem key={prod.id} value={prod.id}>
+                        {prod.name}
+                      </SelectItem>
+                    ))}
+                    {filteredProducts.length === 0 && formData.category && (
+                      <SelectItem value="__none" disabled>
+                        No products in this category
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -158,14 +197,14 @@ _Sent via BrindaRani Website_`;
               </div>
 
               {/* Quantity */}
-              <div className="md:col-span-2">
+              <div>
                 <label className="block text-sm font-medium mb-2">Quantity</label>
                 <Input
                   type="number"
                   min="1"
                   value={formData.quantity}
                   onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                  className="input-sacred max-w-[200px]"
+                  className="input-sacred"
                 />
               </div>
 
