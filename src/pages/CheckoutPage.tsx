@@ -46,14 +46,9 @@ const CheckoutPage = () => {
     } else {
       setIsProcessing(true);
       
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Create order
-      const order = {
-        id: `ORD-${Date.now()}`,
-        userId: auth.user?.id || 'guest',
-        userName: formData.name,
+      try {
+        // Create order
+      const orderData = {
         items: cart.map(item => ({
           productId: item.productId,
           productName: item.name,
@@ -62,16 +57,18 @@ const CheckoutPage = () => {
           price: item.price,
         })),
         total,
-        status: 'paid' as const,
         paymentMethod: formData.paymentMethod.toUpperCase(),
         address: `${formData.address}, ${formData.city}, ${formData.district}, ${formData.state}, ${formData.country} - ${formData.pincode}`,
-        createdAt: new Date().toISOString().split('T')[0],
       };
 
-      addOrder(order);
-      clearCart();
-      setIsProcessing(false);
-      setOrderSuccess(true);
+        await addOrder(orderData);
+        clearCart();
+        setIsProcessing(false);
+        setOrderSuccess(true);
+      } catch (error: any) {
+        toast.error('Order failed', { description: error.message });
+        setIsProcessing(false);
+      }
     }
   };
 

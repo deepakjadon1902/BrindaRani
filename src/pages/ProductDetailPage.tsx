@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   ChevronRight, 
@@ -19,7 +19,11 @@ import { toast } from 'sonner';
 const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { products, addToCart, addToWishlist, wishlist } = useStore();
+  const { products, addToCart, addToWishlist, wishlist, fetchProducts } = useStore();
+
+  useEffect(() => {
+    if (products.length === 0) fetchProducts();
+  }, []);
   
   const product = products.find(p => p.id === id);
   

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Truck, ShieldCheck, RotateCcw, Lock, Sparkles, Tag, Percent, Gift, Clock } from 'lucide-react';
 import { useStore } from '@/store/useStore';
@@ -7,7 +8,12 @@ import ProductCard from '@/components/user/ProductCard';
 import { Button } from '@/components/ui/button';
 
 const Index = () => {
-  const { products } = useStore();
+  const { products, fetchProducts, fetchCategories } = useStore();
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
 
   const trendingProducts = products.filter(p => p.isTrending).slice(0, 4);
   const latestProducts = products.filter(p => p.isLatest).slice(0, 4);

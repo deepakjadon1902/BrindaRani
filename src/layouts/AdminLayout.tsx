@@ -6,9 +6,6 @@ import {
   FolderTree, 
   ShoppingBag, 
   Users, 
-  CreditCard,
-  BarChart3,
-  Settings,
   LogOut,
   Menu,
   X,
@@ -24,9 +21,6 @@ const menuItems = [
   { icon: FolderTree, label: 'Categories', path: '/admin/categories' },
   { icon: ShoppingBag, label: 'Orders', path: '/admin/orders' },
   { icon: Users, label: 'Users', path: '/admin/users' },
-  { icon: CreditCard, label: 'Payments', path: '/admin/payments' },
-  { icon: BarChart3, label: 'Analytics', path: '/admin/analytics' },
-  { icon: Settings, label: 'Settings', path: '/admin/settings' },
 ];
 
 const AdminLayout = () => {

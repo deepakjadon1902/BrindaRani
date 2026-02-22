@@ -1,13 +1,22 @@
+import { useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 
 const AdminOrders = () => {
-  const { orders, updateOrderStatus } = useStore();
+  const { orders, updateOrderStatus, fetchOrders } = useStore();
 
-  const handleStatusChange = (orderId: string, status: string) => {
-    updateOrderStatus(orderId, status as any);
-    toast.success('Order status updated');
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const handleStatusChange = async (orderId: string, status: string) => {
+    try {
+      await updateOrderStatus(orderId, status as any);
+      toast.success('Order status updated');
+    } catch {
+      toast.error('Failed to update order');
+    }
   };
 
   return (
@@ -17,26 +26,30 @@ const AdminOrders = () => {
         <table className="table-premium">
           <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
           <tbody>
-            {orders.map((order) => (
-              <tr key={order.id}>
-                <td className="font-medium">{order.id}</td>
-                <td>{order.userName}</td>
-                <td>{order.items.length} items</td>
-                <td>₹{order.total.toLocaleString()}</td>
-                <td>
-                  <Select value={order.status} onValueChange={(v) => handleStatusChange(order.id, v)}>
-                    <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="paid">Paid</SelectItem>
-                      <SelectItem value="shipped">Shipped</SelectItem>
-                      <SelectItem value="delivered">Delivered</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </td>
-                <td className="text-muted-foreground">{order.createdAt}</td>
-              </tr>
-            ))}
+            {orders.length === 0 ? (
+              <tr><td colSpan={6} className="text-center py-8 text-muted-foreground">No orders yet</td></tr>
+            ) : (
+              orders.map((order) => (
+                <tr key={order.id}>
+                  <td className="font-medium">{order.id?.slice(-8)}</td>
+                  <td>{order.userName}</td>
+                  <td>{order.items.length} items</td>
+                  <td>₹{order.total.toLocaleString()}</td>
+                  <td>
+                    <Select value={order.status} onValueChange={(v) => handleStatusChange(order.id, v)}>
+                      <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="paid">Paid</SelectItem>
+                        <SelectItem value="shipped">Shipped</SelectItem>
+                        <SelectItem value="delivered">Delivered</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </td>
+                  <td className="text-muted-foreground">{new Date(order.createdAt).toLocaleDateString()}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
