@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Search } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { Button } from '@/components/ui/button';
@@ -6,10 +6,23 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
 const AdminProducts = () => {
-  const { products, deleteProduct, updateProduct } = useStore();
+  const { products, deleteProduct, fetchProducts, isLoadingProducts } = useStore();
   const [search, setSearch] = useState('');
 
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteProduct(id);
+      toast.success('Deleted');
+    } catch {
+      toast.error('Failed to delete product');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -27,24 +40,30 @@ const AdminProducts = () => {
         <table className="table-premium">
           <thead><tr><th>Product</th><th>Category</th><th>Price Range</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody>
-            {filtered.map((product) => (
-              <tr key={product.id}>
-                <td><div className="flex items-center gap-3">
-                  <img src={product.images[0]} alt="" className="w-12 h-12 rounded-lg object-cover" />
-                  <span className="font-medium">{product.name}</span>
-                </div></td>
-                <td>{product.category}</td>
-                <td>₹{Math.min(...product.sizes.map(s => s.price))} - ₹{Math.max(...product.sizes.map(s => s.price))}</td>
-                <td><div className="flex gap-1">
-                  {product.isTrending && <span className="badge-trending text-xs">Trending</span>}
-                  {product.isLatest && <span className="badge-new text-xs">New</span>}
-                </div></td>
-                <td><div className="flex gap-2">
-                  <button className="p-2 hover:bg-muted rounded-lg"><Edit2 size={16} /></button>
-                  <button onClick={() => { deleteProduct(product.id); toast.success('Deleted'); }} className="p-2 hover:bg-destructive/10 rounded-lg text-destructive"><Trash2 size={16} /></button>
-                </div></td>
-              </tr>
-            ))}
+            {isLoadingProducts ? (
+              <tr><td colSpan={5} className="text-center py-8 text-muted-foreground">Loading...</td></tr>
+            ) : filtered.length === 0 ? (
+              <tr><td colSpan={5} className="text-center py-8 text-muted-foreground">No products found. Add products from the backend.</td></tr>
+            ) : (
+              filtered.map((product) => (
+                <tr key={product.id}>
+                  <td><div className="flex items-center gap-3">
+                    <img src={product.images[0]} alt="" className="w-12 h-12 rounded-lg object-cover" />
+                    <span className="font-medium">{product.name}</span>
+                  </div></td>
+                  <td>{product.category}</td>
+                  <td>₹{Math.min(...product.sizes.map(s => s.price))} - ₹{Math.max(...product.sizes.map(s => s.price))}</td>
+                  <td><div className="flex gap-1">
+                    {product.isTrending && <span className="badge-trending text-xs">Trending</span>}
+                    {product.isLatest && <span className="badge-new text-xs">New</span>}
+                  </div></td>
+                  <td><div className="flex gap-2">
+                    <button className="p-2 hover:bg-muted rounded-lg"><Edit2 size={16} /></button>
+                    <button onClick={() => handleDelete(product.id)} className="p-2 hover:bg-destructive/10 rounded-lg text-destructive"><Trash2 size={16} /></button>
+                  </div></td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, Filter, Grid, List, X } from 'lucide-react';
 import { useStore } from '@/store/useStore';
@@ -16,7 +16,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 const ProductsPage = () => {
   const [searchParams] = useSearchParams();
-  const { products, categories, searchQuery, setSearchQuery } = useStore();
+  const { products, categories, searchQuery, setSearchQuery, fetchProducts, fetchCategories } = useStore();
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
   
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('name');

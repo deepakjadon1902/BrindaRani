@@ -18,14 +18,17 @@ const AdminLoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
     
-    const success = login(email, password, true);
-    if (success) {
-      toast.success('Welcome, Admin!');
-      navigate('/admin/dashboard');
-    } else {
-      toast.error('Invalid admin credentials');
+    try {
+      const success = await login(email, password, true);
+      if (success) {
+        toast.success('Welcome, Admin!');
+        navigate('/admin/dashboard');
+      } else {
+        toast.error('Invalid admin credentials');
+      }
+    } catch (error: any) {
+      toast.error('Login failed', { description: error.message });
     }
     setIsLoading(false);
   };

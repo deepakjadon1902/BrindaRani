@@ -29,18 +29,19 @@ const LoginPage = () => {
 
     setIsLoading(true);
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    const success = login(email, password);
-    
-    if (success) {
-      toast.success('Welcome back!');
-      navigate(redirect);
-    } else {
-      toast.error('Invalid credentials', {
-        description: 'Please register first or check your credentials',
-      });
+    try {
+      const success = await login(email, password);
+      
+      if (success) {
+        toast.success('Welcome back!');
+        navigate(redirect);
+      } else {
+        toast.error('Invalid credentials', {
+          description: 'Please register first or check your credentials',
+        });
+      }
+    } catch (error: any) {
+      toast.error('Login failed', { description: error.message });
     }
     
     setIsLoading(false);

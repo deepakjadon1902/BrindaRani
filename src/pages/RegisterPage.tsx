@@ -47,26 +47,25 @@ const RegisterPage = () => {
 
     setIsLoading(true);
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    const success = register(formData.name, formData.email, formData.password, {
-      phone: formData.phone,
-      address: formData.address,
-      city: formData.city,
-      district: formData.district,
-      state: formData.state,
-      country: formData.country,
-      pincode: formData.pincode,
-    });
-    
-    if (success) {
-      toast.success('Account created successfully!', {
-        description: 'Welcome to BrindaRani',
+    try {
+      const success = await register(formData.name, formData.email, formData.password, {
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        district: formData.district,
+        state: formData.state,
+        country: formData.country,
+        pincode: formData.pincode,
       });
-      navigate('/');
-    } else {
-      toast.error('Registration failed');
+      
+      if (success) {
+        toast.success('Account created successfully!', {
+          description: 'Welcome to BrindaRani',
+        });
+        navigate('/');
+      }
+    } catch (error: any) {
+      toast.error('Registration failed', { description: error.message });
     }
     
     setIsLoading(false);

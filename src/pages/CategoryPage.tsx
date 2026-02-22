@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { useStore } from '@/store/useStore';
@@ -5,7 +6,12 @@ import ProductCard from '@/components/user/ProductCard';
 
 const CategoryPage = () => {
   const { name } = useParams();
-  const { products, categories } = useStore();
+  const { products, categories, fetchProducts, fetchCategories } = useStore();
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
 
   const decodedName = decodeURIComponent(name || '');
   const category = categories.find(c => c.name === decodedName);
