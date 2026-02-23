@@ -60,7 +60,7 @@ const AdminLoginPage = () => {
             </Button>
           </form>
           <div className="mt-6 p-4 bg-muted rounded-lg text-center text-sm">
-            <p className="text-muted-foreground"><strong>Demo:</strong> deepakjadon1907@gmail.com / deepakjadon1907@</p>
+            <p className="text-muted-foreground"><strong>Demo:</strong> deepakjadon1902@gmail.com / deepakjadon1902@</p>
           </div>
         </div>
       </div>
