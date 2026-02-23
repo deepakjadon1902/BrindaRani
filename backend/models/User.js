@@ -15,6 +15,14 @@ const userSchema = new mongoose.Schema({
   avatar: { type: String, default: '' },
   isBlocked: { type: Boolean, default: false },
   isAdmin: { type: Boolean, default: false },
+  
+  // Google OAuth
+  googleId: { type: String, default: null },
+  
+  // Email verification
+  isEmailVerified: { type: Boolean, default: false },
+  emailVerificationToken: { type: String, default: null },
+  emailVerificationExpires: { type: Date, default: null },
 }, { timestamps: true });
 
 // Hash password before save
@@ -33,6 +41,8 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 userSchema.methods.toJSON = function() {
   const obj = this.toObject();
   delete obj.password;
+  delete obj.emailVerificationToken;
+  delete obj.emailVerificationExpires;
   return obj;
 };
 

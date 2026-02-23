@@ -1,13 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CreditCard, Truck, Check } from 'lucide-react';
+import { CreditCard, Truck, Check, Shield } from 'lucide-react';
 import { useStore } from '@/store/useStore';
+import { paymentAPI, ordersAPI } from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -26,12 +33,88 @@ const CheckoutPage = () => {
     state: auth.user?.state || '',
     country: auth.user?.country || 'India',
     pincode: auth.user?.pincode || '',
-    paymentMethod: 'upi',
+    paymentMethod: 'razorpay',
   });
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const shipping = subtotal > 500 ? 0 : 50;
   const total = subtotal + shipping;
+
+  const loadRazorpayScript = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handleRazorpayPayment = async (orderData: any) => {
+    const loaded = await loadRazorpayScript();
+    if (!loaded) {
+      toast.error('Failed to load payment gateway');
+      return;
+    }
+
+    try {
+      // Create Razorpay order
+      const { orderId, amount, currency, key } = await paymentAPI.createOrder(total);
+
+      const options = {
+        key,
+        amount,
+        currency,
+        name: 'BrindaRani',
+        description: `Order of ${cart.length} items`,
+        order_id: orderId,
+        handler: async (response: any) => {
+          try {
+            // Verify payment on backend
+            const result = await paymentAPI.verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              orderData,
+            });
+
+            if (result.success) {
+              clearCart();
+              setOrderSuccess(true);
+              toast.success('Payment successful! Order placed.');
+            }
+          } catch (err: any) {
+            toast.error('Payment verification failed', { description: err.message });
+          }
+          setIsProcessing(false);
+        },
+        prefill: {
+          name: formData.name,
+          email: formData.email,
+          contact: formData.phone,
+        },
+        theme: {
+          color: '#8B4513',
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false);
+            toast.info('Payment cancelled');
+          },
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (err: any) {
+      toast.error('Failed to create payment order', { description: err.message });
+      setIsProcessing(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,8 +129,6 @@ const CheckoutPage = () => {
     } else {
       setIsProcessing(true);
       
-      try {
-        // Create order
       const orderData = {
         items: cart.map(item => ({
           productId: item.productId,
@@ -61,13 +142,19 @@ const CheckoutPage = () => {
         address: `${formData.address}, ${formData.city}, ${formData.district}, ${formData.state}, ${formData.country} - ${formData.pincode}`,
       };
 
-        await addOrder(orderData);
-        clearCart();
-        setIsProcessing(false);
-        setOrderSuccess(true);
-      } catch (error: any) {
-        toast.error('Order failed', { description: error.message });
-        setIsProcessing(false);
+      if (formData.paymentMethod === 'razorpay') {
+        await handleRazorpayPayment(orderData);
+      } else {
+        // COD order
+        try {
+          await addOrder(orderData);
+          clearCart();
+          setIsProcessing(false);
+          setOrderSuccess(true);
+        } catch (error: any) {
+          toast.error('Order failed', { description: error.message });
+          setIsProcessing(false);
+        }
       }
     }
   };
@@ -129,87 +216,45 @@ const CheckoutPage = () => {
               {step === 1 && (
                 <div className="card-premium p-6 space-y-6">
                   <h2 className="text-xl font-semibold">Shipping Details</h2>
-
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label>Full Name *</Label>
-                      <Input
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="mt-1 input-sacred"
-                      />
+                      <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="mt-1 input-sacred" />
                     </div>
                     <div>
                       <Label>Email *</Label>
-                      <Input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="mt-1 input-sacred"
-                      />
+                      <Input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="mt-1 input-sacred" />
                     </div>
                     <div className="md:col-span-2">
                       <Label>Phone *</Label>
-                      <Input
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="mt-1 input-sacred"
-                      />
+                      <Input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="mt-1 input-sacred" />
                     </div>
                     <div className="md:col-span-2">
                       <Label>Address *</Label>
-                      <Textarea
-                        value={formData.address}
-                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        className="mt-1 input-sacred"
-                      />
+                      <Textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="mt-1 input-sacred" />
                     </div>
                     <div>
                       <Label>City *</Label>
-                      <Input
-                        value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                        className="mt-1 input-sacred"
-                      />
+                      <Input value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} className="mt-1 input-sacred" />
                     </div>
                     <div>
                       <Label>District *</Label>
-                      <Input
-                        value={formData.district}
-                        onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                        className="mt-1 input-sacred"
-                      />
+                      <Input value={formData.district} onChange={(e) => setFormData({ ...formData, district: e.target.value })} className="mt-1 input-sacred" />
                     </div>
                     <div>
                       <Label>State *</Label>
-                      <Input
-                        value={formData.state}
-                        onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                        className="mt-1 input-sacred"
-                      />
+                      <Input value={formData.state} onChange={(e) => setFormData({ ...formData, state: e.target.value })} className="mt-1 input-sacred" />
                     </div>
                     <div>
                       <Label>Country *</Label>
-                      <Input
-                        value={formData.country}
-                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                        className="mt-1 input-sacred"
-                      />
+                      <Input value={formData.country} onChange={(e) => setFormData({ ...formData, country: e.target.value })} className="mt-1 input-sacred" />
                     </div>
                     <div>
                       <Label>Pincode *</Label>
-                      <Input
-                        value={formData.pincode}
-                        onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                        className="mt-1 input-sacred"
-                      />
+                      <Input value={formData.pincode} onChange={(e) => setFormData({ ...formData, pincode: e.target.value })} className="mt-1 input-sacred" />
                     </div>
                   </div>
-
-                  <Button type="submit" className="w-full btn-sacred py-6">
-                    Continue to Payment
-                  </Button>
+                  <Button type="submit" className="w-full btn-sacred py-6">Continue to Payment</Button>
                 </div>
               )}
 
@@ -217,26 +262,15 @@ const CheckoutPage = () => {
                 <div className="card-premium p-6 space-y-6">
                   <h2 className="text-xl font-semibold">Payment Method</h2>
 
-                  <RadioGroup
-                    value={formData.paymentMethod}
-                    onValueChange={(value) => setFormData({ ...formData, paymentMethod: value })}
-                    className="space-y-3"
-                  >
+                  <RadioGroup value={formData.paymentMethod} onValueChange={(value) => setFormData({ ...formData, paymentMethod: value })} className="space-y-3">
                     <div className="flex items-center space-x-3 p-4 border border-border rounded-lg hover:border-primary transition-colors">
-                      <RadioGroupItem value="upi" id="upi" />
-                      <Label htmlFor="upi" className="flex-1 cursor-pointer">
-                        <span className="font-medium">UPI</span>
-                        <span className="block text-sm text-muted-foreground">
-                          Pay using Google Pay, PhonePe, or any UPI app
+                      <RadioGroupItem value="razorpay" id="razorpay" />
+                      <Label htmlFor="razorpay" className="flex-1 cursor-pointer">
+                        <span className="font-medium flex items-center gap-2">
+                          <Shield size={16} className="text-primary" /> Pay with Razorpay
                         </span>
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-3 p-4 border border-border rounded-lg hover:border-primary transition-colors">
-                      <RadioGroupItem value="card" id="card" />
-                      <Label htmlFor="card" className="flex-1 cursor-pointer">
-                        <span className="font-medium">Credit/Debit Card</span>
                         <span className="block text-sm text-muted-foreground">
-                          All major cards accepted
+                          UPI, Credit/Debit Cards, Net Banking, Wallets — All in one
                         </span>
                       </Label>
                     </div>
@@ -252,20 +286,11 @@ const CheckoutPage = () => {
                   </RadioGroup>
 
                   <div className="flex gap-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setStep(1)}
-                      className="flex-1"
-                    >
+                    <Button type="button" variant="outline" onClick={() => setStep(1)} className="flex-1">
                       Back
                     </Button>
-                    <Button 
-                      type="submit" 
-                      className="flex-1 btn-sacred"
-                      disabled={isProcessing}
-                    >
-                      {isProcessing ? 'Processing...' : 'Place Order'}
+                    <Button type="submit" className="flex-1 btn-sacred" disabled={isProcessing}>
+                      {isProcessing ? 'Processing...' : formData.paymentMethod === 'razorpay' ? 'Pay Now' : 'Place Order'}
                     </Button>
                   </div>
                 </div>
@@ -277,30 +302,20 @@ const CheckoutPage = () => {
           <div className="lg:col-span-1">
             <div className="card-premium p-6 sticky top-24">
               <h2 className="text-xl font-semibold mb-6">Order Summary</h2>
-
               <div className="space-y-4 mb-6">
                 {cart.map((item) => (
                   <div key={`${item.productId}-${item.size}`} className="flex gap-3">
                     <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm line-clamp-1">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.size} × {item.quantity}
-                      </p>
-                      <p className="text-sm font-medium">
-                        ₹{(item.price * item.quantity).toLocaleString()}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{item.size} × {item.quantity}</p>
+                      <p className="text-sm font-medium">₹{(item.price * item.quantity).toLocaleString()}</p>
                     </div>
                   </div>
                 ))}
               </div>
-
               <div className="border-t border-border pt-4 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>

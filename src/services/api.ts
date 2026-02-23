@@ -64,6 +64,15 @@ export const authAPI = {
 
   updateProfile: (data: Record<string, string>) =>
     apiFetch('/auth/profile', { method: 'PUT', body: JSON.stringify(data) }),
+
+  // Email verification
+  verifyEmail: (token: string) => apiFetch(`/auth/verify-email?token=${token}`),
+
+  resendVerification: () =>
+    apiFetch('/auth/resend-verification', { method: 'POST' }),
+
+  // Google OAuth - returns URL to redirect to
+  getGoogleAuthUrl: () => `${API_BASE_URL}/auth/google`,
 };
 
 // ========== PRODUCTS API ==========
@@ -110,6 +119,19 @@ export const ordersAPI = {
 
   updateStatus: (id: string, status: string) =>
     apiFetch(`/orders/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) }),
+};
+
+// ========== PAYMENT API (Razorpay) ==========
+export const paymentAPI = {
+  createOrder: (amount: number) =>
+    apiFetch('/payment/create-order', { method: 'POST', body: JSON.stringify({ amount }) }),
+
+  verifyPayment: (data: {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+    orderData: any;
+  }) => apiFetch('/payment/verify', { method: 'POST', body: JSON.stringify(data) }),
 };
 
 // ========== USERS API (Admin) ==========
