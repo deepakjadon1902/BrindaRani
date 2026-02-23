@@ -24,6 +24,8 @@ import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import NotFound from "./pages/NotFound";
 import CustomDesignPage from "./pages/CustomDesignPage";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
+import GoogleCallbackPage from "./pages/GoogleCallbackPage";
 
 // Admin Pages
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
@@ -65,6 +67,8 @@ const App = () => (
             <Route path="about" element={<AboutPage />} />
             <Route path="contact" element={<ContactPage />} />
             <Route path="custom-design" element={<CustomDesignPage />} />
+            <Route path="verify-email" element={<VerifyEmailPage />} />
+            <Route path="auth/google/callback" element={<GoogleCallbackPage />} />
           </Route>
 
           {/* Admin Routes */}
