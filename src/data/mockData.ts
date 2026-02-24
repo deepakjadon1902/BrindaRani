@@ -61,7 +61,7 @@ export interface Order {
     price: number;
   }[];
   total: number;
-  status: 'pending' | 'paid' | 'shipped' | 'delivered';
+  status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
   paymentMethod: string;
   address: string;
   createdAt: string;
