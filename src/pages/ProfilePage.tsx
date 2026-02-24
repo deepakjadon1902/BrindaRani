@@ -30,10 +30,41 @@ const ProfilePage = () => {
 
   const userOrders = orders.filter(o => o.userId === auth.user?.id);
 
-  const handleSave = () => {
-    // In a real app, this would update the user profile
-    toast.success('Profile updated!');
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      const { authAPI } = await import('@/services/api');
+      const { user } = await authAPI.updateProfile({
+        name: formData.name,
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        district: formData.district,
+        state: formData.state,
+        country: formData.country,
+        pincode: formData.pincode,
+      });
+      // Update store with new user data
+      useStore.setState((state) => ({
+        auth: {
+          ...state.auth,
+          user: {
+            ...state.auth.user!,
+            name: formData.name,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            district: formData.district,
+            state: formData.state,
+            country: formData.country,
+            pincode: formData.pincode,
+          },
+        },
+      }));
+      toast.success('Profile updated!');
+      setIsEditing(false);
+    } catch (error: any) {
+      toast.error('Failed to update profile', { description: error.message });
+    }
   };
 
   const handleLogout = () => {
@@ -134,15 +165,6 @@ const ProfilePage = () => {
                   <Input
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    disabled={!isEditing}
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label>City</Label>
-                  <Input
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                     disabled={!isEditing}
                     className="mt-1"
                   />
