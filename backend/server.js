@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-const passport = require('./config/passport');
 
 dotenv.config();
+const passport = require('./config/passport');
 
 const app = express();
 

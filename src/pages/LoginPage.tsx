@@ -138,6 +138,9 @@ const LoginPage = () => {
                 Create one
               </Link>
             </p>
+            <div className="mt-4 p-3 rounded-lg bg-muted text-xs text-muted-foreground">
+              Demo user (offline preview): <span className="font-medium">rohitjadon8781@gmail.com</span> / <span className="font-medium">rohitjadon8781@</span>
+            </div>
           </div>
         </div>
       </div>

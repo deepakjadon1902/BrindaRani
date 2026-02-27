@@ -38,4 +38,17 @@ router.post('/', authenticate, adminOnly, upload.array('images', 10), (req, res)
   }
 });
 
+// POST /api/upload/profile - Upload profile image (authenticated user)
+router.post('/profile', authenticate, upload.single('image'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image file uploaded' });
+    }
+    const url = `/uploads/${req.file.filename}`;
+    res.json({ url });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;

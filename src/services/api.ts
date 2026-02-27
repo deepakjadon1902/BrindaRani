@@ -2,6 +2,7 @@
 // Configure API_BASE_URL to point to your backend server
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
 
 // Token management
 let authToken: string | null = localStorage.getItem('brindaRani-token');
@@ -16,6 +17,16 @@ export const setToken = (token: string | null) => {
 };
 
 export const getToken = () => authToken;
+export const resolveAssetUrl = (url?: string) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  if (url.startsWith('/')) {
+    return `${API_ORIGIN}${url}`;
+  }
+  return url;
+};
 
 // Generic fetch wrapper
 const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
@@ -148,5 +159,11 @@ export const uploadAPI = {
     const formData = new FormData();
     files.forEach(file => formData.append('images', file));
     return apiFetch('/upload', { method: 'POST', body: formData });
+  },
+
+  uploadProfileImage: (file: File) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return apiFetch('/upload/profile', { method: 'POST', body: formData });
   },
 };

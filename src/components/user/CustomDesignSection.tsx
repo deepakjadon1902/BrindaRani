@@ -14,7 +14,8 @@ import {
 import { toast } from 'sonner';
 
 const CustomDesignSection = () => {
-  const { categories, products, adminSettings } = useStore();
+  const { categories, products } = useStore();
+  const adminWhatsAppNumber = '919149370081';
   const [formData, setFormData] = useState({
     category: '',
     product: '',
@@ -27,7 +28,6 @@ const CustomDesignSection = () => {
 
   const sizes = ['Small', 'Medium', 'Large', 'Extra Large', 'Custom Size'];
 
-  // Filter products by selected category
   const filteredProducts = useMemo(() => {
     if (!formData.category) return [];
     return products.filter((p) => p.category === formData.category);
@@ -39,15 +39,17 @@ const CustomDesignSection = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.category || !formData.productSize || !formData.message || !formData.name || !formData.phone) {
       toast.error('Please fill in all required fields');
       return;
     }
 
-    const selectedProduct = products.find(p => p.id === formData.product);
+    const selectedProduct = products.find((p) => p.id === formData.product);
 
-    const whatsappMessage = `🙏 *Custom Order Request - BrindaRani*
+    const whatsappMessage = `Hello BrindaRani Admin for custome design
+
+*Custom Order Request - BrindaRani*
 
 *Customer Details:*
 Name: ${formData.name}
@@ -65,7 +67,7 @@ ${formData.message}
 ---
 _Sent via BrindaRani Website_`;
 
-    const whatsappUrl = `https://wa.me/${adminSettings.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(whatsappMessage)}`;
+    const whatsappUrl = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(whatsappMessage)}`;
     window.open(whatsappUrl, '_blank');
 
     toast.success('Redirecting to WhatsApp...', {
@@ -87,24 +89,21 @@ _Sent via BrindaRani Website_`;
     <section className="py-16 md:py-24 bg-gradient-to-b from-muted/50 to-background">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
           <div className="text-center mb-12">
             <span className="inline-block px-4 py-1.5 bg-secondary/10 text-secondary rounded-full text-sm font-medium mb-4">
-              ✨ Special Service
+              Special Service
             </span>
             <h2 className="section-title text-center mx-auto">
               Custom Design Orders
             </h2>
             <p className="text-muted-foreground mt-6 max-w-2xl mx-auto">
-              Can't find exactly what you're looking for? We create bespoke spiritual products 
+              Can't find exactly what you're looking for? We create bespoke spiritual products
               tailored to your requirements. Share your vision with us!
             </p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="card-premium p-6 md:p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Name */}
               <div>
                 <label className="block text-sm font-medium mb-2">Your Name *</label>
                 <Input
@@ -116,7 +115,6 @@ _Sent via BrindaRani Website_`;
                 />
               </div>
 
-              {/* Phone */}
               <div>
                 <label className="block text-sm font-medium mb-2">Phone Number *</label>
                 <Input
@@ -128,13 +126,9 @@ _Sent via BrindaRani Website_`;
                 />
               </div>
 
-              {/* Category */}
               <div>
                 <label className="block text-sm font-medium mb-2">Category *</label>
-                <Select
-                  value={formData.category}
-                  onValueChange={handleCategoryChange}
-                >
+                <Select value={formData.category} onValueChange={handleCategoryChange}>
                   <SelectTrigger className="input-sacred">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
@@ -148,7 +142,6 @@ _Sent via BrindaRani Website_`;
                 </Select>
               </div>
 
-              {/* Product - filtered by category */}
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Select Product (Optional)
@@ -176,7 +169,6 @@ _Sent via BrindaRani Website_`;
                 </Select>
               </div>
 
-              {/* Size */}
               <div>
                 <label className="block text-sm font-medium mb-2">Preferred Size *</label>
                 <Select
@@ -196,7 +188,6 @@ _Sent via BrindaRani Website_`;
                 </Select>
               </div>
 
-              {/* Quantity */}
               <div>
                 <label className="block text-sm font-medium mb-2">Quantity</label>
                 <Input
@@ -208,7 +199,6 @@ _Sent via BrindaRani Website_`;
                 />
               </div>
 
-              {/* Message */}
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium mb-2">
                   Your Custom Requirements *

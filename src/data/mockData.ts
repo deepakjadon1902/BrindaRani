@@ -113,28 +113,92 @@ export const users: User[] = [];
 export const orders: Order[] = [];
 
 // Promotional Banners (static, no backend needed)
+const makeFestivalHeroImage = (
+  title: string,
+  accent: string,
+  bgA: string,
+  bgB: string,
+  motif: string
+) =>
+  `data:image/svg+xml;utf8,${encodeURIComponent(`
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'>
+    <defs>
+      <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+        <stop offset='0%' stop-color='${bgA}'/>
+        <stop offset='100%' stop-color='${bgB}'/>
+      </linearGradient>
+      <radialGradient id='glow' cx='75%' cy='20%' r='50%'>
+        <stop offset='0%' stop-color='${accent}' stop-opacity='0.55'/>
+        <stop offset='100%' stop-color='${accent}' stop-opacity='0'/>
+      </radialGradient>
+    </defs>
+    <rect width='1600' height='900' fill='url(#g)'/>
+    <rect width='1600' height='900' fill='url(#glow)'/>
+    <circle cx='1260' cy='180' r='190' fill='${accent}' fill-opacity='0.2'/>
+    <circle cx='180' cy='760' r='240' fill='${accent}' fill-opacity='0.16'/>
+    <path d='M0 640 C 340 560, 580 760, 960 650 C 1250 560, 1460 600, 1600 540 L1600 900 L0 900 Z' fill='white' fill-opacity='0.08'/>
+    <text x='120' y='240' fill='white' font-size='62' font-family='Georgia, serif' font-weight='700'>${title}</text>
+    <text x='1220' y='760' text-anchor='end' fill='white' font-size='128' font-family='Georgia, serif' font-weight='700' fill-opacity='0.42'>${motif}</text>
+  </svg>
+  `)}`;
+
 export const banners = [
   {
     id: 'banner-1',
     title: 'Maha Shivratri Special',
-    subtitle: 'Up to 30% off on all Puja Items',
-    image: 'https://images.unsplash.com/photo-1609766856923-7e0a0c06117b?w=1200&q=80',
-    link: '/category/Puja Items'
+    subtitle: 'Sacred puja sets, rudraksha malas and diya collections up to 30% off',
+    image: makeFestivalHeroImage('Maha Shivratri', '#f6c85f', '#1f2937', '#5b21b6', 'Trident'),
+    link: '/category/Puja%20Items'
   },
   {
     id: 'banner-2',
-    title: 'Handcrafted from Vrindavan',
-    subtitle: 'Authentic artisan products with love',
-    image: 'https://images.unsplash.com/photo-1567591370504-80142b28f1ec?w=1200&q=80',
-    link: '/category/Idols & Murtis'
+    title: 'Holi Festival Specials',
+    subtitle: 'Herbal gulal, puja thalis and festive gifting hampers for your celebration',
+    image: makeFestivalHeroImage('Holi Festival', '#f97316', '#7c2d12', '#be185d', 'Colors'),
+    link: '/category/Festival%20Specials'
   },
   {
     id: 'banner-3',
-    title: 'Limited Edition Collection',
-    subtitle: 'Exclusive deity dresses and accessories',
-    image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1200&q=80',
-    link: '/category/Dress & Accessories'
-  }
+    title: 'Janmashtami Divine Collection',
+    subtitle: 'Laddu Gopal dresses, crowns, flutes and festive decorations now live',
+    image: makeFestivalHeroImage('Janmashtami', '#facc15', '#1e3a8a', '#312e81', 'Flute'),
+    link: '/category/Dress%20%26%20Accessories'
+  },
+  {
+    id: 'banner-4',
+    title: 'Navratri Bhakti Essentials',
+    subtitle: 'Durga puja kits, chunri sets and devotional decor curated for nine nights',
+    image: makeFestivalHeroImage('Navratri', '#fb7185', '#4c0519', '#9f1239', 'Garba'),
+    link: '/category/Puja%20Items'
+  },
+  {
+    id: 'banner-5',
+    title: 'Diwali Deepotsav Offers',
+    subtitle: 'Brass diyas, rangoli packs and temple decor with festive discounts',
+    image: makeFestivalHeroImage('Diwali', '#f59e0b', '#78350f', '#b45309', 'Diyas'),
+    link: '/category/Home%20Decor'
+  },
+  {
+    id: 'banner-6',
+    title: 'Ram Navami Special Picks',
+    subtitle: 'Ram darbar idols, bhajan books and puja samagri for sacred celebrations',
+    image: makeFestivalHeroImage('Ram Navami', '#f97316', '#7f1d1d', '#b91c1c', 'Bow'),
+    link: '/category/Idols%20%26%20Murtis'
+  },
+  {
+    id: 'banner-7',
+    title: 'Krishna Bhakti Week',
+    subtitle: 'Tulsi malas, chandan tilak and Vrindavan specials in one collection',
+    image: makeFestivalHeroImage('Krishna Bhakti', '#60a5fa', '#0f172a', '#312e81', 'Peacock'),
+    link: '/category/Vrindavan%20Specials'
+  },
+  {
+    id: 'banner-8',
+    title: 'Ganesh Chaturthi Offers',
+    subtitle: 'Eco-friendly Ganesh idols, modak bhog sets and festive mandir decor',
+    image: makeFestivalHeroImage('Ganesh Chaturthi', '#f97316', '#7c2d12', '#b91c1c', 'Ganesha'),
+    link: '/category/Idols%20%26%20Murtis'
+  },
 ];
 
 // Admin credentials (for demo fallback only)

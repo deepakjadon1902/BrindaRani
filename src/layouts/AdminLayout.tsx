@@ -5,6 +5,7 @@ import {
   Package, 
   FolderTree, 
   ShoppingBag, 
+  CreditCard,
   Users, 
   LogOut,
   Menu,
@@ -20,6 +21,7 @@ const menuItems = [
   { icon: Package, label: 'Products', path: '/admin/products' },
   { icon: FolderTree, label: 'Categories', path: '/admin/categories' },
   { icon: ShoppingBag, label: 'Orders', path: '/admin/orders' },
+  { icon: CreditCard, label: 'Payments', path: '/admin/payments' },
   { icon: Users, label: 'Users', path: '/admin/users' },
 ];
 

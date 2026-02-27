@@ -144,21 +144,28 @@ router.post('/admin-login', async (req, res) => {
 });
 
 // GET /api/auth/google - Initiate Google OAuth
-router.get('/google', passport.authenticate('google', {
-  scope: ['profile', 'email'],
-  session: false,
-}));
+router.get('/google', (req, res, next) => {
+  if (!passport.googleOAuthConfigured) {
+    return res.status(503).json({ message: 'Google OAuth is not configured on the server' });
+  }
+  return passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    session: false,
+  })(req, res, next);
+});
 
 // GET /api/auth/google/callback - Google OAuth callback
-router.get('/google/callback',
-  passport.authenticate('google', { session: false, failureRedirect: '/login?error=google_auth_failed' }),
-  (req, res) => {
-    const token = generateToken(req.user);
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    // Redirect to frontend with token
-    res.redirect(`${frontendUrl}/auth/google/callback?token=${token}`);
+router.get('/google/callback', (req, res, next) => {
+  if (!passport.googleOAuthConfigured) {
+    return res.status(503).json({ message: 'Google OAuth is not configured on the server' });
   }
-);
+  return passport.authenticate('google', { session: false, failureRedirect: '/login?error=google_auth_failed' })(req, res, next);
+}, (req, res) => {
+  const token = generateToken(req.user);
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  // Redirect to frontend with token
+  res.redirect(`${frontendUrl}/auth/google/callback?token=${token}`);
+});
 
 // GET /api/auth/me - Get current user
 router.get('/me', authenticate, async (req, res) => {
@@ -168,10 +175,10 @@ router.get('/me', authenticate, async (req, res) => {
 // PUT /api/auth/profile - Update profile
 router.put('/profile', authenticate, async (req, res) => {
   try {
-    const { name, phone, address, city, district, state, country, pincode } = req.body;
+    const { name, phone, address, city, district, state, country, pincode, avatar } = req.body;
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { name, phone, address, city, district, state, country, pincode },
+      { name, phone, address, city, district, state, country, pincode, avatar },
       { new: true }
     );
     res.json({ user });

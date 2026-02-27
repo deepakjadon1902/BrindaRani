@@ -33,27 +33,28 @@ const HeroSection = () => {
           }`}
         >
           {/* Background Image with Zoom Effect */}
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center transition-transform duration-[8000ms] ease-out"
             style={{
               backgroundImage: `url(${banner.image})`,
               transform: index === currentSlide ? 'scale(1.1)' : 'scale(1)',
             }}
           />
-          
+
           {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/60 to-background/30" />
-          
+
           {/* Content */}
           <div className="relative container mx-auto px-4 h-full flex items-center">
-            <div className={`max-w-xl transition-all duration-1000 ${
-              index === currentSlide 
-                ? 'translate-y-0 opacity-100' 
-                : 'translate-y-8 opacity-0'
-            }`}>
-              <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full 
-                           text-sm font-medium mb-4 animate-fade-in">
-                ✨ Divine Collection
+            <div
+              className={`max-w-xl transition-all duration-1000 ${
+                index === currentSlide
+                  ? 'translate-y-0 opacity-100'
+                  : 'translate-y-8 opacity-0'
+              }`}
+            >
+              <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4 animate-fade-in">
+                Divine Collection
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground mb-4 leading-tight">
                 {banner.title}
@@ -101,8 +102,8 @@ const HeroSection = () => {
             key={index}
             onClick={() => setCurrentSlide(index)}
             className={`h-2 rounded-full transition-all duration-300 ${
-              index === currentSlide 
-                ? 'w-8 bg-primary' 
+              index === currentSlide
+                ? 'w-8 bg-primary'
                 : 'w-2 bg-foreground/30 hover:bg-foreground/50'
             }`}
           />

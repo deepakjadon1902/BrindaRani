@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 
 const ContactPage = () => {
+  const adminWhatsAppNumber = '919149370081';
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,7 +17,18 @@ const ContactPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success('Thank you! Your message has been sent. We\'ll get back to you soon. 🙏');
+    const whatsappMessage = `Hello BrindaRani Admin for contact form,
+
+Name: ${formData.name}
+Email: ${formData.email}
+Phone: ${formData.phone || '-'}
+Subject: ${formData.subject}
+
+Message:
+${formData.message}`;
+    const whatsappUrl = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+    window.open(whatsappUrl, '_blank');
+    toast.success('Redirecting to WhatsApp...');
     setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
   };
 
@@ -34,7 +46,7 @@ const ContactPage = () => {
     {
       icon: Phone,
       title: 'Call Us',
-      lines: ['+91 98765 43210', '+91 87654 32109'],
+      lines: ['+91 91493 70081 (WhatsApp)', '+91 91493 70081'],
     },
     {
       icon: Clock,
@@ -45,7 +57,6 @@ const ContactPage = () => {
 
   return (
     <div>
-      {/* Hero Banner */}
       <section className="relative py-20 md:py-28 bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 overflow-hidden">
         <div className="container mx-auto px-4 text-center relative z-10">
           <span className="text-sm text-primary font-medium uppercase tracking-wider mb-3 block">
@@ -55,13 +66,12 @@ const ContactPage = () => {
             Contact <span className="text-primary">Us</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            We'd love to hear from you. Reach out for any queries about our products, 
+            We'd love to hear from you. Reach out for any queries about our products,
             orders, or custom requests.
           </p>
         </div>
       </section>
 
-      {/* Contact Info Cards */}
       <section className="py-16 md:py-20">
         <div className="container mx-auto px-4">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -80,17 +90,15 @@ const ContactPage = () => {
         </div>
       </section>
 
-      {/* Contact Form + Map */}
       <section className="py-16 md:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12">
-            {/* Form */}
             <div className="bg-background p-8 md:p-10 rounded-3xl border border-border shadow-sm">
               <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground mb-2">
                 Send Us a Message
               </h2>
               <p className="text-muted-foreground mb-8">
-                Fill out the form below and we'll respond within 24 hours.
+                Fill out the form below and continue directly on WhatsApp.
               </p>
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid sm:grid-cols-2 gap-4">
@@ -120,7 +128,7 @@ const ContactPage = () => {
                     <Input
                       value={formData.phone}
                       onChange={e => setFormData(d => ({ ...d, phone: e.target.value }))}
-                      placeholder="+91 98765 43210"
+                      placeholder="+91 91493 70081"
                     />
                   </div>
                   <div>
@@ -145,12 +153,11 @@ const ContactPage = () => {
                 </div>
                 <Button type="submit" size="lg" className="w-full gap-2">
                   <Send size={18} />
-                  Send Message
+                  Send on WhatsApp
                 </Button>
               </form>
             </div>
 
-            {/* Map / Location visual */}
             <div className="flex flex-col gap-6">
               <div className="flex-1 rounded-3xl overflow-hidden border border-border shadow-sm min-h-[300px]">
                 <iframe
@@ -165,10 +172,10 @@ const ContactPage = () => {
                 />
               </div>
               <div className="bg-gradient-to-r from-primary to-secondary p-8 rounded-3xl text-primary-foreground">
-                <h3 className="text-xl font-serif font-bold mb-2">🙏 Visit Our Store</h3>
+                <h3 className="text-xl font-serif font-bold mb-2">Visit Our Store</h3>
                 <p className="opacity-90 text-sm leading-relaxed">
-                  Experience the divine atmosphere of our Vrindavan store. Touch and feel 
-                  our handcrafted products, receive blessings, and discover unique spiritual 
+                  Experience the divine atmosphere of our Vrindavan store. Touch and feel
+                  our handcrafted products, receive blessings, and discover unique spiritual
                   items that you won't find online.
                 </p>
               </div>
