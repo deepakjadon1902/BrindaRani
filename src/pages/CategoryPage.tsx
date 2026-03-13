@@ -6,12 +6,16 @@ import ProductCard from '@/components/user/ProductCard';
 
 const CategoryPage = () => {
   const { name } = useParams();
-  const { products, categories, fetchProducts, fetchCategories } = useStore();
+  const { products, categories, fetchProducts, fetchCategories, isLoadingProducts } = useStore();
 
   useEffect(() => {
-    fetchProducts();
-    fetchCategories();
-  }, []);
+    if (categories.length === 0) {
+      fetchCategories();
+    }
+    if (products.length === 0 && !isLoadingProducts) {
+      fetchProducts();
+    }
+  }, [categories.length, products.length, isLoadingProducts, fetchCategories, fetchProducts]);
 
   const decodedName = decodeURIComponent(name || '');
   const category = categories.find(c => c.name === decodedName);

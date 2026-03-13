@@ -16,12 +16,16 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 const ProductsPage = () => {
   const [searchParams] = useSearchParams();
-  const { products, categories, searchQuery, setSearchQuery, fetchProducts, fetchCategories } = useStore();
+  const { products, categories, searchQuery, setSearchQuery, fetchProducts, fetchCategories, isLoadingProducts } = useStore();
 
   useEffect(() => {
-    fetchProducts();
-    fetchCategories();
-  }, []);
+    if (categories.length === 0) {
+      fetchCategories();
+    }
+    if (products.length === 0 && !isLoadingProducts) {
+      fetchProducts();
+    }
+  }, [categories.length, products.length, isLoadingProducts, fetchCategories, fetchProducts]);
   
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('name');

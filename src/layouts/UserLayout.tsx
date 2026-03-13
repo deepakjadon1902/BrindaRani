@@ -1,5 +1,5 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { 
   Search, 
   Heart, 
@@ -33,11 +33,25 @@ const UserLayout = () => {
     cart, 
     wishlist, 
     searchQuery, 
-    setSearchQuery
+    setSearchQuery,
+    products,
+    categories,
+    fetchProducts,
+    fetchCategories,
+    isLoadingProducts
   } = useStore();
 
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const wishlistCount = wishlist.length;
+
+  useEffect(() => {
+    if (categories.length === 0) {
+      fetchCategories();
+    }
+    if (products.length === 0 && !isLoadingProducts) {
+      fetchProducts();
+    }
+  }, [categories.length, products.length, isLoadingProducts, fetchCategories, fetchProducts]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
