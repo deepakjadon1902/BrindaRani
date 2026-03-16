@@ -15,6 +15,7 @@ import {
 import { useStore } from '@/store/useStore';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import AdminBackground from '@/components/admin/AdminBackground';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
@@ -38,7 +39,10 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="h-screen overflow-hidden flex bg-background relative">
+      <AdminBackground className="z-0" />
+      <div className="absolute inset-0 bg-black/60 z-0" aria-hidden="true" />
+      <div className="relative z-10 flex w-full">
       {/* Mobile Overlay */}
       {mobileOpen && (
         <div 
@@ -133,7 +137,7 @@ const AdminLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {/* Top Bar */}
         <header className="h-16 bg-card border-b border-border flex items-center justify-between px-4 lg:px-6">
           <div className="flex items-center gap-4">
@@ -162,9 +166,10 @@ const AdminLayout = () => {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 lg:p-6 overflow-auto">
+        <main className="flex-1 p-4 lg:p-6 overflow-y-auto scroll-smooth min-h-0">
           <Outlet />
         </main>
+      </div>
       </div>
     </div>
   );

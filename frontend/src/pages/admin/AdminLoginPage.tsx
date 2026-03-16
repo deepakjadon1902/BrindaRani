@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import AdminBackground from '@/components/admin/AdminBackground';
 
 const AdminLoginPage = () => {
   const navigate = useNavigate();
@@ -34,8 +35,10 @@ const AdminLoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-sidebar p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-sidebar p-4 relative overflow-hidden">
+      <AdminBackground className="z-0" />
+      <div className="absolute inset-0 bg-black/60 z-0" aria-hidden="true" />
+      <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-serif font-bold text-sidebar-foreground">BrindaRani</h1>
           <p className="text-sidebar-foreground/60 mt-2">Admin Portal</p>
@@ -59,9 +62,6 @@ const AdminLoginPage = () => {
               {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
-          <div className="mt-6 p-4 bg-muted rounded-lg text-center text-sm">
-            <p className="text-muted-foreground"><strong>Demo:</strong> deepakjadon1902@gmail.com / deepakjadon1902@</p>
-          </div>
         </div>
       </div>
     </div>

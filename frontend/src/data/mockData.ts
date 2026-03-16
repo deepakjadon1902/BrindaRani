@@ -201,8 +201,3 @@ export const banners = [
   },
 ];
 
-// Admin credentials (for demo fallback only)
-export const adminCredentials = {
-  email: 'deepakjadon1902@gmail.com',
-  password: 'deepakjadon1902@'
-};

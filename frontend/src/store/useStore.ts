@@ -94,11 +94,6 @@ interface StoreState {
   updateAdminSettings: (settings: Partial<{ whatsappNumber: string; storeName: string }>) => void;
 }
 
-const DEMO_ADMIN_EMAIL = 'deepakjadon1902@gmail.com';
-const DEMO_ADMIN_PASSWORD = 'deepakjadon1902@';
-const DEMO_USER_EMAIL = 'rohitjadon8781@gmail.com';
-const DEMO_USER_PASSWORD = 'rohitjadon8781@';
-
 // Helper to normalize MongoDB _id to id
 const normalizeId = (item: any) => ({
   ...item,
@@ -134,6 +129,34 @@ const isNetworkError = (error: unknown) => {
   return message.includes('failed to fetch') || message.includes('network');
 };
 
+const getWishlistKey = (user?: { id?: string; email?: string } | null) => {
+  if (user?.id) return `brindaRani-wishlist:${user.id}`;
+  if (user?.email) return `brindaRani-wishlist:${user.email}`;
+  return null;
+};
+
+const loadWishlistForUser = (user?: { id?: string; email?: string } | null) => {
+  const key = getWishlistKey(user);
+  if (!key) return [];
+  try {
+    const raw = localStorage.getItem(key);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveWishlistForUser = (user: { id?: string; email?: string } | null, wishlist: WishlistItem[]) => {
+  const key = getWishlistKey(user);
+  if (!key) return;
+  try {
+    localStorage.setItem(key, JSON.stringify(wishlist));
+  } catch {
+    // Ignore storage errors (quota, privacy mode, etc.)
+  }
+};
+
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
@@ -151,80 +174,21 @@ export const useStore = create<StoreState>()(
           const { user, token } = await apiCall(email, password);
           
           setToken(token);
+          const normalizedUser = normalizeUser(user);
+          const userWishlist = loadWishlistForUser(normalizedUser);
           set({
             auth: {
               isAuthenticated: true,
-              user: normalizeUser(user),
+              user: normalizedUser,
               isAdmin: user.isAdmin || false,
               token,
             },
+            wishlist: userWishlist,
           });
           return true;
         } catch (error: unknown) {
           console.error('Login error:', error);
           const message = error instanceof Error ? error.message : 'Login failed';
-
-          if (
-            isAdmin &&
-            isNetworkError(error) &&
-            email === DEMO_ADMIN_EMAIL &&
-            password === DEMO_ADMIN_PASSWORD
-          ) {
-            const fallbackToken = `offline-admin-${Date.now()}`;
-            setToken(fallbackToken);
-            set({
-              auth: {
-                isAuthenticated: true,
-                user: {
-                  id: 'offline-admin',
-                  name: 'Admin',
-                  email,
-                  phone: '',
-                  address: '',
-                  city: '',
-                  district: '',
-                  state: '',
-                  country: '',
-                  pincode: '',
-                  avatar: '',
-                },
-                isAdmin: true,
-                token: fallbackToken,
-              },
-            });
-            return true;
-          }
-
-          if (
-            !isAdmin &&
-            isNetworkError(error) &&
-            email === DEMO_USER_EMAIL &&
-            password === DEMO_USER_PASSWORD
-          ) {
-            const fallbackToken = `offline-user-${Date.now()}`;
-            setToken(fallbackToken);
-            set({
-              auth: {
-                isAuthenticated: true,
-                user: {
-                  id: 'offline-user',
-                  name: 'Rohit Jadon',
-                  email,
-                  phone: '',
-                  address: '',
-                  city: '',
-                  district: '',
-                  state: '',
-                  country: 'India',
-                  pincode: '',
-                  avatar: '',
-                },
-                isAdmin: false,
-                token: fallbackToken,
-              },
-            });
-            return true;
-          }
 
           if (message.toLowerCase().includes('invalid credentials')) {
             return false;
@@ -240,13 +204,15 @@ export const useStore = create<StoreState>()(
           });
           
           setToken(token);
+          const normalizedUser = normalizeUser(user);
           set({
             auth: {
               isAuthenticated: true,
-              user: normalizeUser(user),
+              user: normalizedUser,
               isAdmin: false,
               token,
             },
+            wishlist: loadWishlistForUser(normalizedUser),
           });
           return true;
         } catch (error) {
@@ -256,6 +222,8 @@ export const useStore = create<StoreState>()(
       },
 
       logout: () => {
+        const { auth, wishlist } = get();
+        saveWishlistForUser(auth.user, wishlist);
         setToken(null);
         set({
           auth: {
@@ -264,6 +232,7 @@ export const useStore = create<StoreState>()(
             isAdmin: false,
             token: null,
           },
+          wishlist: [],
         });
       },
 
@@ -503,7 +472,9 @@ export const useStore = create<StoreState>()(
       addToWishlist: (item) => {
         set(state => {
           if (state.wishlist.find(i => i.productId === item.productId)) return state;
-          return { wishlist: [...state.wishlist, item] };
+          const nextWishlist = [...state.wishlist, item];
+          saveWishlistForUser(state.auth.user, nextWishlist);
+          return { wishlist: nextWishlist };
         });
       },
 
@@ -511,6 +482,7 @@ export const useStore = create<StoreState>()(
         set(state => ({
           wishlist: state.wishlist.filter(i => i.productId !== productId),
         }));
+        saveWishlistForUser(get().auth.user, get().wishlist);
       },
 
       moveToCart: (productId) => {
@@ -552,9 +524,13 @@ export const useStore = create<StoreState>()(
       partialize: (state) => ({
         auth: state.auth,
         cart: state.cart,
-        wishlist: state.wishlist,
         adminSettings: state.adminSettings,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        const user = state.auth?.user ?? null;
+        state.wishlist = loadWishlistForUser(user);
+      },
     }
   )
 );
