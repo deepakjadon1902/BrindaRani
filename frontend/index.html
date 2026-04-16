@@ -3,29 +3,90 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Brindarani | Sacred E-Commerce from Vrindavan</title>
-    <meta name="description" content="Brindarani - Sacred E-Commerce from Vrindavan" />
-    <meta name="keywords" content="Brindarani, puja items, idols, spiritual store, vrindavan, devotional products" />
-    <meta name="author" content="Brindarani" />
+    <!-- Dynamic metadata loaded by script below -->
+    <title id="page-title">Brindarani</title>
+    <meta id="meta-description" name="description" content="" />
+    <meta id="meta-keywords" name="keywords" content="" />
+    <meta id="meta-theme-color" name="theme-color" content="#d68a2e" />
+    <meta id="meta-canonical" rel="canonical" href="" />
+    <link id="icon-favicon" rel="icon" href="" />
+    <link id="icon-apple" rel="apple-touch-icon" href="" />
+
+    <!-- OpenGraph Metadata -->
+    <meta id="og-title" property="og:title" content="" />
+    <meta id="og-description" property="og:description" content="" />
+    <meta id="og-type" property="og:type" content="website" />
+    <meta id="og-url" property="og:url" content="" />
+    <meta id="og-site-name" property="og:site_name" content="" />
+    <meta id="og-image" property="og:image" content="" />
+    <meta id="og-image-alt" property="og:image:alt" content="" />
+
+    <!-- Twitter Metadata -->
+    <meta id="twitter-card" name="twitter:card" content="summary_large_image" />
+    <meta id="twitter-title" name="twitter:title" content="" />
+    <meta id="twitter:description" name="twitter:description" content="" />
+
+    <!-- Application Metadata -->
+    <meta id="app-name" name="application-name" content="" />
+    <meta id="app-mobile-title" name="apple-mobile-web-app-title" content="" />
+
+    <!-- Robots & SEO -->
     <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#d68a2e" />
-    <link rel="canonical" href="https://brindarani.com/" />
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/favicon.ico" />
+    <meta name="language" content="English" />
 
-    <meta property="og:title" content="Brindarani | Sacred E-Commerce from Vrindavan" />
-    <meta property="og:description" content="Brindarani - Sacred E-Commerce from Vrindavan" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://brindarani.com/" />
-    <meta property="og:site_name" content="Brindarani" />
-    <meta property="og:image:alt" content="Brindarani logo" />
+    <!-- Load settings early to avoid layout shift -->
+    <script>
+      (function() {
+        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        const API_BASE = isProduction ? 'https://brindarani.onrender.com' : 'http://localhost:5000';
+        const SETTINGS_URL = API_BASE + '/api/settings';
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Brindarani | Sacred E-Commerce from Vrindavan" />
-    <meta name="twitter:description" content="Brindarani - Sacred E-Commerce from Vrindavan" />
+        fetch(SETTINGS_URL)
+          .then(res => res.json())
+          .then(settings => {
+            const appName = settings.appName || 'Brindarani';
+            const motto = (settings.motto || '').trim();
+            const logoUrl = settings.logoUrl ? (settings.logoUrl.startsWith('http') ? settings.logoUrl : API_BASE + settings.logoUrl) : '';
+            const faviconUrl = settings.faviconUrl ? (settings.faviconUrl.startsWith('http') ? settings.faviconUrl : API_BASE + settings.faviconUrl) : '';
+            const pageUrl = window.location.href;
 
-    <meta name="application-name" content="Brindarani" />
-    <meta name="apple-mobile-web-app-title" content="Brindarani" />
+            // Set title
+            const title = motto ? `${appName} | ${motto}` : appName;
+            document.getElementById('page-title').textContent = title;
+            document.getElementById('og-title').setAttribute('content', title);
+            document.getElementById('twitter-title').setAttribute('content', title);
+            document.getElementById('app-name').setAttribute('content', appName);
+            document.getElementById('app-mobile-title').setAttribute('content', appName);
+            document.getElementById('og-site-name').setAttribute('content', appName);
+
+            // Set description
+            const description = motto ? `${appName} - ${motto}` : appName;
+            document.getElementById('meta-description').setAttribute('content', description);
+            document.getElementById('og-description').setAttribute('content', description);
+            document.getElementById('twitter:description').setAttribute('content', description);
+
+            // Set favicons
+            if (faviconUrl) {
+              document.getElementById('icon-favicon').setAttribute('href', faviconUrl);
+              document.getElementById('icon-apple').setAttribute('href', faviconUrl);
+            }
+
+            // Set logo as OG image
+            if (logoUrl) {
+              document.getElementById('og-image').setAttribute('content', logoUrl);
+              document.getElementById('og-image-alt').setAttribute('content', appName + ' logo');
+            }
+
+            // Set URLs
+            document.getElementById('meta-canonical').setAttribute('href', pageUrl);
+            document.getElementById('og-url').setAttribute('content', pageUrl);
+          })
+          .catch(error => {
+            console.warn('Failed to load app settings:', error);
+            // Fallback values already set in meta tags
+          });
+      })();
+    </script>
   </head>
 
   <body>

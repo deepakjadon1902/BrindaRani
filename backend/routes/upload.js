@@ -20,7 +20,7 @@ const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, cb) => {
-    const allowed = /jpeg|jpg|png|webp|gif/;
+    const allowed = /jpeg|jpg|png|webp|gif|ico/;
     const ext = allowed.test(path.extname(file.originalname).toLowerCase());
     const mime = allowed.test(file.mimetype);
     if (ext && mime) return cb(null, true);
@@ -40,6 +40,19 @@ router.post('/', authenticate, adminOnly, upload.array('images', 10), (req, res)
 
 // POST /api/upload/profile - Upload profile image (authenticated user)
 router.post('/profile', authenticate, upload.single('image'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image file uploaded' });
+    }
+    const url = `/uploads/${req.file.filename}`;
+    res.json({ url });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// POST /api/upload/favicon - Upload favicon/logo (admin only)
+router.post('/favicon', authenticate, adminOnly, upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No image file uploaded' });

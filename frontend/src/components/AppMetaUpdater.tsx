@@ -1,31 +1,27 @@
 import { useEffect } from 'react';
 import { useStore } from '@/store/useStore';
+import { resolveAssetUrl } from '@/services/api';
 
-const upsertMeta = (key: 'name' | 'property', value: string, content: string) => {
-  if (!content) return;
-  const selector = `meta[${key}="${value}"]`;
-  const el = document.querySelector(selector) as HTMLMetaElement | null;
-  if (el) {
-    el.setAttribute('content', content);
-    return;
+const updateMetaTag = (id: string, content: string) => {
+  const element = document.getElementById(id) as HTMLMetaElement | null;
+  if (element && content) {
+    element.setAttribute('content', content);
   }
-  const meta = document.createElement('meta');
-  meta.setAttribute(key, value);
-  meta.setAttribute('content', content);
-  document.head.appendChild(meta);
 };
 
-const upsertLink = (rel: string, href: string) => {
-  if (!href) return;
-  const existing = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement | null;
-  if (existing) {
-    existing.href = href;
-    return;
+const updateLinkTag = (id: string, href: string) => {
+  const element = document.getElementById(id) as HTMLLinkElement | null;
+  if (element && href) {
+    element.href = href;
   }
-  const link = document.createElement('link');
-  link.rel = rel;
-  link.href = href;
-  document.head.appendChild(link);
+};
+
+const updateTitle = (title: string) => {
+  const titleElement = document.getElementById('page-title');
+  if (titleElement) {
+    titleElement.textContent = title;
+  }
+  document.title = title;
 };
 
 const AppMetaUpdater = () => {
@@ -36,31 +32,41 @@ const AppMetaUpdater = () => {
   }, [fetchAppSettings]);
 
   useEffect(() => {
+    if (!appSettings.appName) return;
+
     const name = appSettings.appName || 'Brindarani';
-    const motto = (appSettings.motto || 'Sacred E-Commerce from Vrindavan').trim();
-    const logo = appSettings.logoUrl || '';
-    const favicon = appSettings.faviconUrl || '';
+    const motto = (appSettings.motto || '').trim();
+    const logo = resolveAssetUrl(appSettings.logoUrl || '');
+    const favicon = resolveAssetUrl(appSettings.faviconUrl || '');
+    const pageUrl = window.location.href;
 
     const title = motto ? `${name} | ${motto}` : name;
     const description = motto ? `${name} - ${motto}` : name;
 
-    document.title = title;
+    // Update page title
+    updateTitle(title);
 
-    upsertMeta('name', 'description', description);
-    upsertMeta('name', 'application-name', name);
-    upsertMeta('name', 'apple-mobile-web-app-title', name);
+    // Update all meta tags using IDs
+    updateMetaTag('meta-description', description);
+    updateMetaTag('app-name', name);
+    updateMetaTag('app-mobile-title', name);
+    updateMetaTag('og-title', title);
+    updateMetaTag('og-description', description);
+    updateMetaTag('og-site-name', name);
+    updateMetaTag('og-url', pageUrl);
+    updateMetaTag('twitter-title', title);
+    updateMetaTag('twitter:description', description);
+    updateMetaTag('meta-canonical', pageUrl);
 
-    upsertMeta('property', 'og:title', title);
-    upsertMeta('property', 'og:description', description);
-    if (logo) upsertMeta('property', 'og:image', logo);
+    // Update favicons and images
+    if (favicon) {
+      updateLinkTag('icon-favicon', favicon);
+      updateLinkTag('icon-apple', favicon);
+    }
 
-    upsertMeta('name', 'twitter:title', title);
-    upsertMeta('name', 'twitter:description', description);
-    if (logo) upsertMeta('name', 'twitter:image', logo);
-
-    if (favicon || logo) {
-      upsertLink('icon', favicon || logo);
-      upsertLink('apple-touch-icon', logo || favicon);
+    if (logo) {
+      updateMetaTag('og-image', logo);
+      updateMetaTag('og-image-alt', `${name} logo`);
     }
   }, [appSettings]);
 
