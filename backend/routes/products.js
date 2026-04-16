@@ -7,12 +7,13 @@ const router = express.Router();
 // GET /api/products - Get all products (public)
 router.get('/', async (req, res) => {
   try {
-    const { category, search, trending, latest, sort } = req.query;
+    const { category, search, trending, latest, vrindavanSpecial, sort } = req.query;
     let query = {};
 
     if (category) query.category = category;
     if (trending === 'true') query.isTrending = true;
     if (latest === 'true') query.isLatest = true;
+    if (vrindavanSpecial === 'true') query.isVrindavanSpecial = true;
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: 'i' } },

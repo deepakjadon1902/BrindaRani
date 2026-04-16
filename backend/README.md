@@ -1,4 +1,4 @@
-# BrindaRani Backend API
+# Brindarani Backend API
 
 ## Setup
 
@@ -89,3 +89,4 @@ Set your backend URL in the frontend:
 ```
 src/services/api.ts → API_BASE_URL = 'http://localhost:5000/api'
 ```
+

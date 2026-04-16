@@ -1,18 +1,18 @@
-// BrindaRani API Service
+// Brindarani API Service
 // Configure API_BASE_URL to point to your backend server
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
 
 // Token management
-let authToken: string | null = localStorage.getItem('brindaRani-token');
+let authToken: string | null = localStorage.getItem('Brindarani-token');
 
 export const setToken = (token: string | null) => {
   authToken = token;
   if (token) {
-    localStorage.setItem('brindaRani-token', token);
+    localStorage.setItem('Brindarani-token', token);
   } else {
-    localStorage.removeItem('brindaRani-token');
+    localStorage.removeItem('Brindarani-token');
   }
 };
 
@@ -126,10 +126,21 @@ export const ordersAPI = {
   create: (data: {
     items: { productId: string; productName: string; size: string; quantity: number; price: number }[];
     total: number; paymentMethod: string; address: string;
+    customerEmail?: string; customerPhone?: string;
   }) => apiFetch('/orders', { method: 'POST', body: JSON.stringify(data) }),
 
   updateStatus: (id: string, status: string) =>
     apiFetch(`/orders/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) }),
+
+  track: (code: string) => apiFetch(`/orders/track/${code}`),
+
+  sendPaymentFailed: (data: {
+    orderCode?: string;
+    total?: number;
+    paymentMethod?: string;
+    reason?: string;
+    items?: { productId: string; productName: string; size: string; quantity: number; price: number }[];
+  }) => apiFetch('/orders/payment-failed', { method: 'POST', body: JSON.stringify(data) }),
 };
 
 // ========== PAYMENT API (Razorpay) ==========
@@ -167,3 +178,20 @@ export const uploadAPI = {
     return apiFetch('/upload/profile', { method: 'POST', body: formData });
   },
 };
+
+// ========== SETTINGS API ==========
+export const settingsAPI = {
+  getPublic: () => apiFetch('/settings'),
+
+  getAdmin: () => apiFetch('/settings/admin'),
+
+  update: (data: Record<string, any>) =>
+    apiFetch('/settings', { method: 'PUT', body: JSON.stringify(data) }),
+
+  updateAdminCredentials: (adminEmail: string, adminPassword: string) =>
+    apiFetch('/settings/admin-credentials', {
+      method: 'PUT',
+      body: JSON.stringify({ adminEmail, adminPassword }),
+    }),
+};
+

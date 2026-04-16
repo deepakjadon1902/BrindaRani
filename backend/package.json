@@ -1,7 +1,7 @@
 {
-  "name": "brindaRani-backend",
+  "name": "Brindarani-backend",
   "version": "1.0.0",
-  "description": "BrindaRani E-Commerce Backend - Node.js + Express + MongoDB",
+  "description": "Brindarani E-Commerce Backend - Node.js + Express + MongoDB",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -24,3 +24,4 @@
     "nodemon": "^3.1.7"
   }
 }
+

@@ -47,9 +47,9 @@ const CustomDesignSection = () => {
 
     const selectedProduct = products.find((p) => p.id === formData.product);
 
-    const whatsappMessage = `Hello BrindaRani Admin for custome design
+    const whatsappMessage = `Hello Brindarani Admin for custome design
 
-*Custom Order Request - BrindaRani*
+*Custom Order Request - Brindarani*
 
 *Customer Details:*
 Name: ${formData.name}
@@ -65,7 +65,7 @@ Quantity: ${formData.quantity}
 ${formData.message}
 
 ---
-_Sent via BrindaRani Website_`;
+_Sent via Brindarani Website_`;
 
     const whatsappUrl = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(whatsappMessage)}`;
     window.open(whatsappUrl, '_blank');
@@ -230,3 +230,4 @@ _Sent via BrindaRani Website_`;
 };
 
 export default CustomDesignSection;
+

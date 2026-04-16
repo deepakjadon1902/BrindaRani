@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   ChevronRight, 
@@ -60,6 +60,25 @@ const ProductDetailPage = () => {
     toast.success('Added to cart!', {
       description: `${product.name} (${selectedSize.size}) x ${quantity}`,
     });
+  };
+
+    const handleBuyNow = () => {
+    if (!selectedSize) return;
+
+    const payload = {
+      productId: product.id,
+      name: product.name,
+      image: product.images[0],
+      size: selectedSize.size,
+      price: selectedSize.price,
+      quantity,
+    };
+    try {
+      sessionStorage.setItem('Brindarani-buy-now', JSON.stringify(payload));
+    } catch {
+      // Ignore storage errors
+    }
+    navigate('/checkout?buyNow=1');
   };
 
   const handleAddToWishlist = () => {
@@ -132,6 +151,7 @@ const ProductDetailPage = () => {
             <div className="flex gap-2 mb-4">
               {product.isTrending && <span className="badge-trending">Trending</span>}
               {product.isLatest && <span className="badge-new">New Arrival</span>}
+              {product.isVrindavanSpecial && <span className="badge-vrindavan">Vrindavan Special</span>}
             </div>
 
             <h1 className="text-3xl md:text-4xl font-serif font-bold mb-4">
@@ -163,7 +183,7 @@ const ProductDetailPage = () => {
               </span>
               {quantity > 1 && (
                 <span className="text-muted-foreground ml-2">
-                  (₹{selectedSize?.price.toLocaleString()} × {quantity})
+                  (₹{selectedSize?.price.toLocaleString()} * {quantity})
                 </span>
               )}
             </div>
@@ -227,14 +247,22 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-4 mb-8">
+            <div className="flex flex-wrap gap-4 mb-8">
               <Button 
                 onClick={handleAddToCart}
-                className="flex-1 btn-sacred py-6"
+                className="flex-1 btn-sacred py-6 min-w-[180px]"
                 disabled={!selectedSize || selectedSize.stock === 0}
               >
                 <ShoppingCart size={20} className="mr-2" />
                 Add to Cart
+              </Button>
+              <Button
+                onClick={handleBuyNow}
+                className="flex-1 py-6 min-w-[180px]"
+                variant="secondary"
+                disabled={!selectedSize || selectedSize.stock === 0}
+              >
+                Buy Now
               </Button>
               <Button
                 variant="outline"
@@ -280,3 +308,4 @@ const ProductDetailPage = () => {
 };
 
 export default ProductDetailPage;
+

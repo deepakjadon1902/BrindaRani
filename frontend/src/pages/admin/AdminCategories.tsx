@@ -27,14 +27,6 @@ const categoryToForm = (category: Category): CategoryFormState => ({
   subcategories: (category.subcategories || []).join(', '),
 });
 
-const fileToDataUrl = (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ''));
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-
 const AdminCategories = () => {
   const { categories, fetchCategories, addCategory, updateCategory, deleteCategory } = useStore();
   const [open, setOpen] = useState(false);
@@ -100,8 +92,14 @@ const AdminCategories = () => {
         const { urls } = await uploadAPI.uploadImages([imageFile]);
         imageUrl = resolveAssetUrl(urls?.[0] || imageUrl);
       } catch {
-        imageUrl = await fileToDataUrl(imageFile);
+        toast.error('Image upload failed');
+        return;
       }
+    }
+
+    if (!imageUrl) {
+      toast.error('Category image is required');
+      return;
     }
 
     const payload = {
@@ -203,8 +201,7 @@ const AdminCategories = () => {
                   className="mt-3 h-24 w-24 rounded-md object-cover border border-border"
                 />
               )}
-              <p className="text-xs text-muted-foreground mt-2">Or paste image URL</p>
-              <Input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://..." className="mt-1" />
+              <p className="text-xs text-muted-foreground mt-2">Only uploads from device are allowed.</p>
             </div>
             <div>
               <Label>Subcategories (comma separated)</Label>

@@ -5,20 +5,16 @@ const AboutPage = () => {
     <div>
       {/* Hero Banner */}
       <section className="relative py-20 md:py-32 bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 overflow-hidden">
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-10 left-10 text-8xl">🙏</div>
-          <div className="absolute bottom-10 right-10 text-8xl">🪷</div>
-        </div>
         <div className="container mx-auto px-4 text-center relative z-10">
           <span className="text-sm text-primary font-medium uppercase tracking-wider mb-3 block">
             Our Story
           </span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground mb-6">
-            About <span className="text-primary">BrindaRani</span>
+            About <span className="text-primary">Brindarani</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            A divine journey from the sacred land of Vrindavan, bringing authentic 
-            spiritual products to devotees worldwide.
+            A bridge from the sacred land of Vrindavan to your home, curated with devotion,
+            tradition, and timeless grace.
           </p>
         </div>
       </section>
@@ -29,25 +25,22 @@ const AboutPage = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <span className="text-sm text-primary font-medium uppercase tracking-wider mb-3 block">
-                Our Mission
+                Our Essence
               </span>
               <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-6">
-                Bringing Vrindavan's Blessings to Your Doorstep
+                Bringing the Divine Near, With Modern Care
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                BrindaRani is a spiritual e-commerce platform dedicated to bringing authentic, 
-                satvik products from the holy land of Vrindavan to devotees worldwide. Our mission 
-                is to provide high-quality puja items, deity accessories, and spiritual goods that 
-                are sourced directly from skilled artisans.
+                Brindarani is more than just an eCommerce platform, it is a bridge that brings the
+                divine essence of Vrindavan closer to your home. Rooted in the sacred land of
+                Vrindavan, we are dedicated to offering authentic and soulful spiritual products
+                that carry the true spirit of devotion.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Every product in our collection is blessed with devotion and crafted with traditional 
-                techniques passed down through generations. We work directly with artisan families 
-                who have been creating sacred items for centuries.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                Our vision is to preserve and promote the rich spiritual heritage of Vrindavan 
-                while making it accessible to everyone, regardless of where they are in the world.
+                From beautifully crafted Krishna idols online to a wide collection of devotional
+                items online, every product at Brindarani is carefully selected to enhance your
+                spiritual journey. We specialize in Vrindavan pooja items online, ensuring that you
+                receive genuine, high-quality items that reflect tradition and purity.
               </p>
             </div>
             <div className="relative">
@@ -59,8 +52,8 @@ const AboutPage = () => {
                 />
               </div>
               <div className="absolute -bottom-6 -left-6 bg-primary text-primary-foreground p-6 rounded-2xl shadow-xl">
-                <p className="text-3xl font-bold font-serif">10+</p>
-                <p className="text-sm opacity-90">Years of Service</p>
+                <p className="text-3xl font-bold font-serif">Pure</p>
+                <p className="text-sm opacity-90">Devotion</p>
               </div>
             </div>
           </div>
@@ -107,24 +100,24 @@ const AboutPage = () => {
               Our Journey
             </span>
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-8">
-              From a Small Shop to a Global Platform
+              A Devotional Experience, Delivered
             </h2>
             <div className="space-y-6 text-muted-foreground leading-relaxed text-left">
               <p>
-                BrindaRani began as a small shop near the Banke Bihari Temple in Vrindavan, 
-                serving local devotees with puja items and deity accessories. Founded by a family 
-                of devotees, the shop quickly became known for its authentic, high-quality products.
+                Whether you are looking for everyday essentials or special festive preparations,
+                our range of spiritual products India caters to all your devotional needs. We also
+                offer thoughtfully curated and customized pooja kits, designed to make your rituals
+                simple, meaningful, and complete.
               </p>
               <p>
-                As word spread, devotees from across India and abroad started reaching out, 
-                wanting to buy the same blessed items they had found during their pilgrimages. 
-                This inspired us to take BrindaRani online, making the divine treasures of 
-                Vrindavan accessible to everyone.
+                At Brindarani, we believe devotion should be accessible, personal, and heartfelt.
+                That is why we are committed to delivering not just products, but a divine
+                experience right to your doorstep.
               </p>
               <p>
-                Today, BrindaRani serves over 10,000 devotees across India and internationally. 
-                We continue to work with the same artisan families, ensuring every product 
-                carries the authentic touch and blessings of Vrindavan.
+                Every item reflects a balance of sacred tradition and refined presentation,
+                so your worship space feels serene, beautiful, and deeply connected to
+                Vrindavan's timeless spirit.
               </p>
             </div>
           </div>
@@ -154,3 +147,4 @@ const AboutPage = () => {
 };
 
 export default AboutPage;
+

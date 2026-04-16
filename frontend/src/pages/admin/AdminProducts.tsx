@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Plus, Edit2, Trash2, Search } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -17,9 +18,10 @@ interface ProductFormState {
   description: string;
   price: string;
   stock: string;
-  image: string;
+  images: string[];
   isTrending: boolean;
   isLatest: boolean;
+  isVrindavanSpecial: boolean;
 }
 
 const emptyForm: ProductFormState = {
@@ -29,9 +31,10 @@ const emptyForm: ProductFormState = {
   description: '',
   price: '',
   stock: '',
-  image: '',
+  images: [],
   isTrending: false,
   isLatest: false,
+  isVrindavanSpecial: false,
 };
 
 const productToForm = (product: Product): ProductFormState => ({
@@ -41,18 +44,11 @@ const productToForm = (product: Product): ProductFormState => ({
   description: product.description || '',
   price: String(product.sizes?.[0]?.price ?? ''),
   stock: String(product.sizes?.[0]?.stock ?? ''),
-  image: product.images?.[0] || '',
+  images: product.images || [],
   isTrending: Boolean(product.isTrending),
   isLatest: Boolean(product.isLatest),
+  isVrindavanSpecial: Boolean(product.isVrindavanSpecial),
 });
-
-const fileToDataUrl = (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ''));
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 
 const AdminProducts = () => {
   const { products, categories, deleteProduct, addProduct, updateProduct, fetchProducts, fetchCategories, isLoadingProducts } = useStore();
@@ -61,8 +57,8 @@ const AdminProducts = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<ProductFormState>(emptyForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState('');
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   useEffect(() => {
     fetchProducts();
@@ -77,16 +73,16 @@ const AdminProducts = () => {
   const openCreate = () => {
     setEditingId(null);
     setForm(emptyForm);
-    setImageFile(null);
-    setImagePreview('');
+    setImageFiles([]);
+    setImagePreviews([]);
     setOpen(true);
   };
 
   const openEdit = (product: Product) => {
     setEditingId(product.id);
     setForm(productToForm(product));
-    setImageFile(null);
-    setImagePreview(product.images?.[0] || '');
+    setImageFiles([]);
+    setImagePreviews([]);
     setOpen(true);
   };
 
@@ -95,16 +91,31 @@ const AdminProducts = () => {
       setOpen(false);
       setEditingId(null);
       setForm(emptyForm);
-      setImageFile(null);
-      setImagePreview('');
+      setImageFiles([]);
+      setImagePreviews([]);
     }
   };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    setImageFiles((prev) => [...prev, ...files]);
+    const previews = files.map((file) => URL.createObjectURL(file));
+    setImagePreviews((prev) => [...prev, ...previews]);
+  };
+
+  const removePreview = (index: number) => {
+    const existingCount = form.images.length;
+    if (index < existingCount) {
+      setForm((prev) => ({
+        ...prev,
+        images: prev.images.filter((_, i) => i !== index),
+      }));
+      return;
+    }
+    const newIndex = index - existingCount;
+    setImagePreviews((prev) => prev.filter((_, i) => i !== newIndex));
+    setImageFiles((prev) => prev.filter((_, i) => i !== newIndex));
   };
 
   const handleDelete = async (id: string) => {
@@ -133,14 +144,20 @@ const AdminProducts = () => {
       return;
     }
 
-    let imageUrl = form.image.trim() || '/placeholder.svg';
-    if (imageFile) {
+    let imageUrls = [...form.images];
+    if (imageFiles.length > 0) {
       try {
-        const { urls } = await uploadAPI.uploadImages([imageFile]);
-        imageUrl = resolveAssetUrl(urls?.[0] || imageUrl);
+        const { urls } = await uploadAPI.uploadImages(imageFiles);
+        imageUrls = [...imageUrls, ...(urls || []).map((url: string) => resolveAssetUrl(url))];
       } catch {
-        imageUrl = await fileToDataUrl(imageFile);
+        toast.error('Image upload failed');
+        return;
       }
+    }
+
+    if (imageUrls.length === 0) {
+      toast.error('At least one product image is required');
+      return;
     }
 
     const payload = {
@@ -149,9 +166,10 @@ const AdminProducts = () => {
       subcategory: form.subcategory.trim(),
       description: form.description.trim(),
       sizes: [{ size: 'Default', price, stock }],
-      images: [imageUrl],
+      images: imageUrls,
       isTrending: form.isTrending,
       isLatest: form.isLatest,
+      isVrindavanSpecial: form.isVrindavanSpecial,
     };
 
     setIsSubmitting(true);
@@ -213,6 +231,7 @@ const AdminProducts = () => {
                     <div className="flex gap-1">
                       {product.isTrending && <span className="badge-trending text-xs">Trending</span>}
                       {product.isLatest && <span className="badge-new text-xs">New</span>}
+                      {product.isVrindavanSpecial && <span className="badge-vrindavan text-xs">Vrindavan Special</span>}
                     </div>
                   </td>
                   <td>
@@ -262,7 +281,11 @@ const AdminProducts = () => {
             </div>
             <div>
               <Label>Description</Label>
-              <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+              <Textarea
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                rows={4}
+              />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -275,17 +298,30 @@ const AdminProducts = () => {
               </div>
             </div>
             <div>
-              <Label>Upload Image</Label>
-              <Input type="file" accept="image/*" onChange={handleImageSelect} className="mt-1" />
-              {(imagePreview || form.image) && (
-                <img
-                  src={imagePreview || form.image}
-                  alt="Preview"
-                  className="mt-3 h-24 w-24 rounded-md object-cover border border-border"
-                />
+              <Label>Upload Images</Label>
+              <Input type="file" accept="image/*" multiple onChange={handleImageSelect} className="mt-1" />
+              {(imagePreviews.length > 0 || form.images.length > 0) && (
+                <div className="mt-3 grid grid-cols-4 gap-2">
+                  {[...form.images, ...imagePreviews].map((src, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={src}
+                        alt="Preview"
+                        className="h-20 w-20 rounded-md object-cover border border-border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePreview(index)}
+                        className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-destructive text-white text-xs"
+                        aria-label="Remove image"
+                      >
+                        Ã—
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
-              <p className="text-xs text-muted-foreground mt-2">Or paste image URL</p>
-              <Input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://..." className="mt-1" />
+              <p className="text-xs text-muted-foreground mt-2">Only uploads from device are allowed.</p>
             </div>
             <div className="flex items-center gap-6">
               <label className="flex items-center gap-2 text-sm">
@@ -295,6 +331,13 @@ const AdminProducts = () => {
               <label className="flex items-center gap-2 text-sm">
                 <Checkbox checked={form.isLatest} onCheckedChange={(v) => setForm({ ...form, isLatest: Boolean(v) })} />
                 Latest
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  checked={form.isVrindavanSpecial}
+                  onCheckedChange={(v) => setForm({ ...form, isVrindavanSpecial: Boolean(v) })}
+                />
+                Vrindavan Special
               </label>
             </div>
             <div className="flex justify-end gap-2 pt-2">
@@ -311,3 +354,4 @@ const AdminProducts = () => {
 };
 
 export default AdminProducts;
+

@@ -17,6 +17,12 @@ const Index = () => {
 
   const trendingProducts = products.filter(p => p.isTrending).slice(0, 4);
   const latestProducts = products.filter(p => p.isLatest).slice(0, 4);
+  const newArrivalProducts = [...products]
+    .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+    .slice(0, 4);
+  const vrindavanSpecials = products
+    .filter(p => p.isVrindavanSpecial)
+    .slice(0, 4);
 
   return (
     <div>
@@ -37,7 +43,7 @@ const Index = () => {
               Sacred Craftsmanship, Delivered to Your Doorstep
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-4">
-              BrindaRani brings the divine essence of Vrindavan directly to your home. Every product is handcrafted by skilled artisans from the holy land, preserving centuries-old traditions of devotion and artistry.
+              Brindarani brings the divine essence of Vrindavan directly to your home. Every product is handcrafted by skilled artisans from the holy land, preserving centuries-old traditions of devotion and artistry.
             </p>
             <p className="text-muted-foreground leading-relaxed">
               Whether you seek a beautifully adorned idol for your mandir, authentic tulsi malas for daily chanting, or premium puja essentials — we ensure every item carries the blessings and authenticity of Vrindavan.
@@ -237,14 +243,66 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Why Choose BrindaRani */}
+      {/* New Arrivals */}
+      <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <span className="text-sm text-secondary font-medium uppercase tracking-wider mb-2 block">
+                Freshly Added
+              </span>
+              <h2 className="section-title">New Arrivals</h2>
+            </div>
+            <Link 
+              to="/products?sort=newest" 
+              className="hidden md:flex items-center gap-2 text-primary hover:underline"
+            >
+              View All <ArrowRight size={18} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {newArrivalProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Vrindavan Specials */}
+      <section className="py-16 md:py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <span className="text-sm text-primary font-medium uppercase tracking-wider mb-2 block">
+                Vrindavan Blessings
+              </span>
+              <h2 className="section-title">Vrindavan Specials</h2>
+            </div>
+            <Link 
+              to="/category/Vrindavan%20Specials" 
+              className="hidden md:flex items-center gap-2 text-primary hover:underline"
+            >
+              View All <ArrowRight size={18} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {vrindavanSpecials.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Brindarani */}
       <section className="py-16 md:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <span className="text-sm text-primary font-medium uppercase tracking-wider mb-2 block">
               Why Devotees Trust Us
             </span>
-            <h2 className="section-title text-center mx-auto">Why Choose BrindaRani?</h2>
+            <h2 className="section-title text-center mx-auto">Why Choose Brindarani?</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="card-premium p-6 text-center group hover:border-primary/30">
@@ -313,7 +371,7 @@ const Index = () => {
               {
                 name: 'Anjali Patel',
                 location: 'Delhi',
-                text: 'BrindaRani is my go-to for all spiritual needs. The quality is unmatched and customer service is wonderful. Highly recommended.',
+                text: 'Brindarani is my go-to for all spiritual needs. The quality is unmatched and customer service is wonderful. Highly recommended.',
                 rating: 5,
               },
             ].map((review, i) => (
@@ -340,3 +398,4 @@ const Index = () => {
 };
 
 export default Index;
+

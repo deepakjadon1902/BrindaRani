@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { 
-  categories as fallbackCategories,
   Product, 
   Category, 
   User, 
@@ -11,7 +10,7 @@ import {
 } from '@/data/mockData';
 import { 
   authAPI, productsAPI, categoriesAPI, ordersAPI, usersAPI,
-  setToken, getToken, resolveAssetUrl 
+  setToken, getToken, resolveAssetUrl, settingsAPI 
 } from '@/services/api';
 
 interface AuthState {
@@ -57,6 +56,23 @@ interface StoreState {
   addCategory: (category: { name: string; image?: string; subcategories?: string[] }) => Promise<void>;
   updateCategory: (id: string, category: { name?: string; image?: string; subcategories?: string[] }) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
+
+  // App Settings (from API)
+  appSettings: {
+    appName: string;
+    motto: string;
+    logoUrl: string;
+    faviconUrl: string;
+    paymentEnabled: boolean;
+    paymentProvider: string;
+    upiId: string;
+    shippingFee: number;
+    freeShippingThreshold: number;
+    notificationEmail: string;
+    notificationWhatsapp: string;
+  };
+  fetchAppSettings: () => Promise<void>;
+  updateAppSettings: (settings: Partial<StoreState['appSettings']>) => Promise<void>;
 
   // Users (Admin - from API)
   users: User[];
@@ -105,6 +121,7 @@ const normalizeProduct = (item: any) => {
   return {
     ...normalized,
     images: Array.isArray(normalized.images) ? normalized.images.map((img: string) => resolveAssetUrl(img)) : [],
+    isVrindavanSpecial: Boolean(normalized.isVrindavanSpecial),
   };
 };
 
@@ -130,8 +147,8 @@ const isNetworkError = (error: unknown) => {
 };
 
 const getWishlistKey = (user?: { id?: string; email?: string } | null) => {
-  if (user?.id) return `brindaRani-wishlist:${user.id}`;
-  if (user?.email) return `brindaRani-wishlist:${user.email}`;
+  if (user?.id) return `Brindarani-wishlist:${user.id}`;
+  if (user?.email) return `Brindarani-wishlist:${user.email}`;
   return null;
 };
 
@@ -307,16 +324,15 @@ export const useStore = create<StoreState>()(
       },
 
       // Categories
-      categories: fallbackCategories,
+      categories: [],
 
       fetchCategories: async () => {
         try {
           const data = await categoriesAPI.getAll();
-          if (data.length > 0) {
-            set({ categories: data.map(normalizeCategory) });
-          }
+          set({ categories: data.map(normalizeCategory) });
         } catch (error) {
-          console.error('Fetch categories error (using fallback):', error);
+          console.error('Fetch categories error:', error);
+          set({ categories: [] });
         }
       },
 
@@ -326,14 +342,7 @@ export const useStore = create<StoreState>()(
           set(state => ({ categories: [...state.categories, normalizeCategory(created)] }));
         } catch (error) {
           console.error('Add category error:', error);
-          if (!isNetworkError(error)) {
-            throw error;
-          }
-          const fallback = normalizeCategory({
-            ...category,
-            _id: `offline-category-${Date.now()}`,
-          });
-          set(state => ({ categories: [...state.categories, fallback] }));
+          throw error;
         }
       },
 
@@ -345,12 +354,7 @@ export const useStore = create<StoreState>()(
           }));
         } catch (error) {
           console.error('Update category error:', error);
-          if (!isNetworkError(error)) {
-            throw error;
-          }
-          set(state => ({
-            categories: state.categories.map(c => c.id === id ? normalizeCategory({ ...c, ...categoryUpdate, _id: c.id }) : c),
-          }));
+          throw error;
         }
       },
 
@@ -362,13 +366,72 @@ export const useStore = create<StoreState>()(
           }));
         } catch (error) {
           console.error('Delete category error:', error);
-          if (!isNetworkError(error)) {
-            throw error;
-          }
-          set(state => ({
-            categories: state.categories.filter(c => c.id !== id),
-          }));
+          throw error;
         }
+      },
+
+      // App Settings
+      appSettings: {
+        appName: 'Brindarani',
+        motto: 'Sacred E-Commerce from Vrindavan',
+        logoUrl: '',
+        faviconUrl: '',
+        paymentEnabled: true,
+        paymentProvider: 'razorpay',
+        upiId: '',
+        shippingFee: 50,
+        freeShippingThreshold: 500,
+        notificationEmail: '',
+        notificationWhatsapp: '',
+      },
+
+      fetchAppSettings: async () => {
+        try {
+          const data = await settingsAPI.getPublic();
+          set({
+            appSettings: {
+              appName: data.appName || 'Brindarani',
+              motto: data.motto || '',
+              logoUrl: resolveAssetUrl(data.logoUrl),
+              faviconUrl: resolveAssetUrl(data.faviconUrl),
+              paymentEnabled: Boolean(data.paymentEnabled),
+              paymentProvider: data.paymentProvider || 'razorpay',
+              upiId: data.upiId || '',
+              shippingFee: Number.isFinite(data.shippingFee) ? data.shippingFee : 50,
+              freeShippingThreshold: Number.isFinite(data.freeShippingThreshold) ? data.freeShippingThreshold : 500,
+              notificationEmail: data.notificationEmail || '',
+              notificationWhatsapp: data.notificationWhatsapp || '',
+            },
+          });
+        } catch (error) {
+          console.error('Fetch settings error:', error);
+        }
+      },
+
+      updateAppSettings: async (settings) => {
+        const payload = { ...settings };
+        if (payload.logoUrl) {
+          payload.logoUrl = resolveAssetUrl(payload.logoUrl);
+        }
+        if (payload.faviconUrl) {
+          payload.faviconUrl = resolveAssetUrl(payload.faviconUrl);
+        }
+        const data = await settingsAPI.update(payload);
+        set({
+          appSettings: {
+            appName: data.appName || 'Brindarani',
+            motto: data.motto || '',
+            logoUrl: resolveAssetUrl(data.logoUrl),
+            faviconUrl: resolveAssetUrl(data.faviconUrl),
+            paymentEnabled: Boolean(data.paymentEnabled),
+            paymentProvider: data.paymentProvider || 'razorpay',
+            upiId: data.upiId || '',
+            shippingFee: Number.isFinite(data.shippingFee) ? data.shippingFee : 50,
+            freeShippingThreshold: Number.isFinite(data.freeShippingThreshold) ? data.freeShippingThreshold : 500,
+            notificationEmail: data.notificationEmail || '',
+            notificationWhatsapp: data.notificationWhatsapp || '',
+          },
+        });
       },
 
       // Users
@@ -510,7 +573,7 @@ export const useStore = create<StoreState>()(
       // Admin Settings
       adminSettings: {
         whatsappNumber: '+91 98765 43210',
-        storeName: 'BrindaRani',
+        storeName: 'Brindarani',
       },
 
       updateAdminSettings: (settings) => {
@@ -520,7 +583,7 @@ export const useStore = create<StoreState>()(
       },
     }),
     {
-      name: 'brindaRani-storage',
+      name: 'Brindarani-storage',
       partialize: (state) => ({
         auth: state.auth,
         cart: state.cart,
@@ -534,3 +597,4 @@ export const useStore = create<StoreState>()(
     }
   )
 );
+

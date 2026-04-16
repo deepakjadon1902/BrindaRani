@@ -1,1 +1,8 @@
 node_modules
+
+# environment files (never commit secrets)
+.env
+.env.*
+!.env.example
+!backend/.env.example
+!frontend/.env.example

@@ -11,6 +11,9 @@ const orderItemSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   userName: { type: String, required: true },
+  customerEmail: { type: String, required: true },
+  customerPhone: { type: String, required: true },
+  orderCode: { type: String, required: true, unique: true },
   items: [orderItemSchema],
   total: { type: Number, required: true },
   status: { 
@@ -18,7 +21,15 @@ const orderSchema = new mongoose.Schema({
     enum: ['pending', 'paid', 'shipped', 'delivered', 'cancelled'],
     default: 'pending' 
   },
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'paid', 'failed'],
+    default: 'pending',
+  },
   paymentMethod: { type: String, required: true },
+  paymentDetails: { type: Object, default: {} },
+  razorpayOrderId: { type: String, default: '' },
+  razorpayPaymentId: { type: String, default: '' },
   address: { type: String, required: true },
 }, { timestamps: true });
 

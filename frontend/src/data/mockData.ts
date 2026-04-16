@@ -1,4 +1,4 @@
-// BrindaRani - Types & Static Data
+// Brindarani - Types & Static Data
 // Only types and categories remain here. Products, users, orders come from the backend API.
 
 export interface ProductSize {
@@ -18,6 +18,7 @@ export interface Product {
   images: string[];
   isTrending: boolean;
   isLatest: boolean;
+  isVrindavanSpecial: boolean;
   rating: number;
   reviews: number;
   createdAt: string;
@@ -51,6 +52,7 @@ export interface User {
 export interface Order {
   _id?: string;
   id: string;
+  orderCode?: string;
   userId: string;
   userName: string;
   items: {
@@ -62,6 +64,7 @@ export interface Order {
   }[];
   total: number;
   status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
+  paymentStatus?: 'pending' | 'paid' | 'failed';
   paymentMethod: string;
   address: string;
   createdAt: string;
@@ -200,4 +203,5 @@ export const banners = [
     link: '/category/Idols%20%26%20Murtis'
   },
 ];
+
 

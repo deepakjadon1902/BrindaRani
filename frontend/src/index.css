@@ -1,11 +1,11 @@
 @tailwind base;
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind components;
 @tailwind utilities;
 
-/* BrindaRani Design System - Spiritual E-Commerce */
+/* Brindarani Design System - Spiritual E-Commerce */
 /* All colors in HSL format */
-
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -177,6 +177,11 @@
            px-2.5 py-0.5 rounded-full;
   }
 
+  .badge-vrindavan {
+    @apply bg-amber-500 text-white text-xs font-medium 
+           px-2.5 py-0.5 rounded-full;
+  }
+
   /* Input Styles */
   .input-sacred {
     @apply w-full px-4 py-3 rounded-lg border border-border 
@@ -328,3 +333,4 @@
     opacity: 1;
   }
 }
+

@@ -1,49 +1,15 @@
+import React from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
 
 const CategoryNavBar = () => {
   const { categories } = useStore();
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = React.useState<string | null>(null);
+  const [showAll, setShowAll] = React.useState(false);
 
-  const preferredCategoryOrder = [
-    'Puja Items',
-    'Idols & Murtis',
-    'Vrindavan Specials',
-    'Tulsi Products',
-    'Spiritual Gifts',
-    'Dress & Accessories',
-    'Chandan & Kumkum',
-    'Brass & Copper Items',
-  ];
-
-  const normalizeCategoryName = (value: string) =>
-    value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-
-  const categoryByNormalizedName = new Map(
-    categories.map((category) => [normalizeCategoryName(category.name), category]),
-  );
-
-  const categoryIconNames: Record<string, string> = {
-    [normalizeCategoryName('Puja Items')]: 'candle',
-    [normalizeCategoryName('Idols & Murtis')]: 'temple-hindu',
-    [normalizeCategoryName('Vrindavan Specials')]: 'flower',
-    [normalizeCategoryName('Tulsi Products')]: 'leaf',
-    [normalizeCategoryName('Spiritual Gifts')]: 'gift',
-    [normalizeCategoryName('Dress & Accessories')]: 'tshirt-crew',
-    [normalizeCategoryName('Chandan & Kumkum')]: 'water',
-    [normalizeCategoryName('Brass & Copper Items')]: 'coin',
-  };
-
-  const getIconSrc = (categoryName: string, isActive: boolean) => {
-    const iconName = categoryIconNames[normalizeCategoryName(categoryName)] ?? 'flower';
-    const color = isActive ? 'ffffff' : '6b7280';
-    return `https://api.mdisvg.com/v1/i/${iconName}?color=${color}&size=18`;
-  };
-
-  const visibleCategories = preferredCategoryOrder
-    .map((name) => categoryByNormalizedName.get(normalizeCategoryName(name)))
-    .filter((category): category is (typeof categories)[number] => Boolean(category));
+  const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+  const visibleCategories = showAll ? sortedCategories : sortedCategories.slice(0, 10);
 
   const handleCategoryClick = (categoryName: string) => {
     setActiveCategory(categoryName);
@@ -51,10 +17,10 @@ const CategoryNavBar = () => {
 
   return (
     <div className="relative">
-      {/* Category Strip - Text Only */}
+      {/* Category Strip - Icons */}
       <div className="bg-muted/60 border-b border-border">
         <div className="container mx-auto px-4">
-          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-2">
+          <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide py-3">
             {visibleCategories.map((category) => {
               const isActive = activeCategory === category.name;
               return (
@@ -62,27 +28,49 @@ const CategoryNavBar = () => {
                   key={category.id}
                   to={`/category/${encodeURIComponent(category.name)}`}
                   onClick={() => handleCategoryClick(category.name)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                  className={`flex flex-col items-center gap-2 px-2 py-1 rounded-xl transition-all duration-200 ${
                     isActive
-                      ? 'bg-primary text-primary-foreground shadow-sm'
-                      : 'text-muted-foreground hover:bg-primary/10 hover:text-primary'
+                      ? 'text-primary'
+                      : 'text-muted-foreground hover:text-primary'
                   }`}
                 >
-                  <span className="flex items-center gap-2">
-                    <img
-                      src={getIconSrc(category.name, isActive)}
-                      alt=""
-                      width={18}
-                      height={18}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-[18px] w-[18px] shrink-0"
-                    />
+                  <span
+                    className={`h-10 w-10 shrink-0 rounded-full border ${
+                      isActive ? 'border-primary/40 bg-primary/10' : 'border-border bg-background'
+                    } flex items-center justify-center overflow-hidden`}
+                  >
+                    {category.image ? (
+                      <img
+                        src={category.image}
+                        alt={`${category.name} icon`}
+                        width={40}
+                        height={40}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {category.name.slice(0, 1)}
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-[11px] font-medium text-center leading-tight">
                     {category.name}
                   </span>
                 </Link>
               );
             })}
+            {categories.length > 10 && (
+              <button
+                type="button"
+                onClick={() => setShowAll((prev) => !prev)}
+                className="ml-1 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap border border-border text-muted-foreground
+                           hover:bg-primary/10 hover:text-primary transition-all duration-200"
+              >
+                {showAll ? 'Show Less' : 'View All Categories'}
+              </button>
+            )}
           </div>
         </div>
       </div>

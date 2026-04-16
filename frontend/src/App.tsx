@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useStore } from "@/store/useStore";
+import AppMetaUpdater from "@/components/AppMetaUpdater";
 
 // Layouts
 import UserLayout from "@/layouts/UserLayout";
@@ -17,6 +18,7 @@ import CategoryPage from "./pages/CategoryPage";
 import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import TrackOrderPage from "./pages/TrackOrderPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -35,6 +37,7 @@ import AdminCategories from "./pages/admin/AdminCategories";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminPayments from "./pages/admin/AdminPayments";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +56,7 @@ const App = () => (
       <Toaster />
       <Sonner position="top-center" />
       <BrowserRouter>
+        <AppMetaUpdater />
         <Routes>
           {/* User Routes */}
           <Route path="/" element={<UserLayout />}>
@@ -69,6 +73,7 @@ const App = () => (
             <Route path="about" element={<AboutPage />} />
             <Route path="contact" element={<ContactPage />} />
             <Route path="custom-design" element={<CustomDesignPage />} />
+            <Route path="track-order" element={<TrackOrderPage />} />
             <Route path="verify-email" element={<VerifyEmailPage />} />
             <Route path="auth/google/callback" element={<GoogleCallbackPage />} />
           </Route>
@@ -83,6 +88,7 @@ const App = () => (
             <Route path="orders" element={<AdminOrders />} />
             <Route path="payments" element={<AdminPayments />} />
             <Route path="users" element={<AdminUsers />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

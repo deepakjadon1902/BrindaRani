@@ -1,7 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const Settings = require('../models/Settings');
 const { authenticate } = require('../middleware/auth');
 const { sendVerificationEmail } = require('../utils/mailer');
 const passport = require('../config/passport');
@@ -118,6 +120,29 @@ router.post('/login', async (req, res) => {
 router.post('/admin-login', async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    const settings = await Settings.findOne();
+    const settingsEmail = settings?.adminEmail?.trim();
+    const settingsHash = settings?.adminPasswordHash || '';
+
+    if (settingsEmail && settingsHash) {
+      const isMatch = settingsEmail === email && await bcrypt.compare(password, settingsHash);
+      if (isMatch) {
+        let admin = await User.findOne({ email: settingsEmail, isAdmin: true });
+        if (!admin) {
+          admin = await User.create({
+            name: 'Admin',
+            email: settingsEmail,
+            password,
+            isAdmin: true,
+            isEmailVerified: true,
+            avatar: '',
+          });
+        }
+        const token = generateToken(admin);
+        return res.json({ user: admin, token });
+      }
+    }
 
     if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
       let admin = await User.findOne({ email, isAdmin: true });

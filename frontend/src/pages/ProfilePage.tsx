@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User, Package, LogOut, Edit2, CreditCard, Calendar, Mail, Phone, MapPin, Camera } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { Button } from '@/components/ui/button';
@@ -264,7 +264,7 @@ const ProfilePage = () => {
                     <div key={order.id} className="p-4 border border-border rounded-lg">
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <p className="font-medium">{order.id}</p>
+                          <p className="font-medium">Order ID: {order.orderCode || order.id}</p>
                           <p className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleString()}</p>
                         </div>
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -279,7 +279,17 @@ const ProfilePage = () => {
                       <div className="text-sm text-muted-foreground mb-2">
                         {order.items.map((item) => item.productName).join(', ')}
                       </div>
-                      <p className="font-semibold">Rs {order.total.toLocaleString()}</p>
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold">Rs {order.total.toLocaleString()}</p>
+                        {order.orderCode && (
+                          <Link
+                            to={`/track-order?code=${encodeURIComponent(order.orderCode)}`}
+                            className="text-sm text-primary hover:underline"
+                          >
+                            Track order
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -301,7 +311,7 @@ const ProfilePage = () => {
                         <CreditCard className="text-primary" size={18} />
                         <div>
                           <p className="font-medium">{order.paymentMethod}</p>
-                          <p className="text-xs text-muted-foreground">Order: {order.id}</p>
+                          <p className="text-xs text-muted-foreground">Order: {order.orderCode || order.id}</p>
                         </div>
                       </div>
                       <div className="text-right">

@@ -10,7 +10,7 @@ import AdminBackground from '@/components/admin/AdminBackground';
 
 const AdminLoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useStore();
+  const { login, appSettings } = useStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -40,7 +40,16 @@ const AdminLoginPage = () => {
       <div className="absolute inset-0 bg-black/60 z-0" aria-hidden="true" />
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-serif font-bold text-sidebar-foreground">BrindaRani</h1>
+          {appSettings.logoUrl ? (
+            <img
+              src={appSettings.logoUrl}
+              alt={`${appSettings.appName} logo`}
+              className="h-12 w-12 rounded-full object-cover border border-sidebar-border mx-auto mb-3"
+            />
+          ) : null}
+          <h1 className="text-3xl font-serif font-bold text-sidebar-foreground">
+            {appSettings.appName || 'Brindarani'}
+          </h1>
           <p className="text-sidebar-foreground/60 mt-2">Admin Portal</p>
         </div>
         <div className="bg-card rounded-2xl p-8 shadow-large">
@@ -69,3 +78,4 @@ const AdminLoginPage = () => {
 };
 
 export default AdminLoginPage;
+

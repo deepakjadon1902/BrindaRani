@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -6,6 +6,7 @@ import {
   FolderTree, 
   ShoppingBag, 
   CreditCard,
+  Settings as SettingsIcon,
   Users, 
   LogOut,
   Menu,
@@ -24,6 +25,7 @@ const menuItems = [
   { icon: ShoppingBag, label: 'Orders', path: '/admin/orders' },
   { icon: CreditCard, label: 'Payments', path: '/admin/payments' },
   { icon: Users, label: 'Users', path: '/admin/users' },
+  { icon: SettingsIcon, label: 'Settings', path: '/admin/settings' },
 ];
 
 const AdminLayout = () => {
@@ -31,7 +33,11 @@ const AdminLayout = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { auth, logout } = useStore();
+  const { auth, logout, appSettings, fetchAppSettings } = useStore();
+
+  useEffect(() => {
+    fetchAppSettings();
+  }, [fetchAppSettings]);
 
   const handleLogout = () => {
     logout();
@@ -65,8 +71,15 @@ const AdminLayout = () => {
           <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border">
             {!collapsed && (
               <Link to="/admin/dashboard" className="flex items-center gap-2">
+                {appSettings.logoUrl ? (
+                  <img
+                    src={appSettings.logoUrl}
+                    alt={`${appSettings.appName} logo`}
+                    className="h-7 w-7 rounded-full object-cover border border-sidebar-border"
+                  />
+                ) : null}
                 <span className="text-xl font-serif font-bold text-sidebar-foreground">
-                  BrindaRani
+                  {appSettings.appName || 'Brindarani'}
                 </span>
                 <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded">
                   Admin
@@ -176,3 +189,4 @@ const AdminLayout = () => {
 };
 
 export default AdminLayout;
+

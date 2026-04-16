@@ -15,6 +15,7 @@ const productSchema = new mongoose.Schema({
   images: [{ type: String }],
   isTrending: { type: Boolean, default: false },
   isLatest: { type: Boolean, default: false },
+  isVrindavanSpecial: { type: Boolean, default: false },
   rating: { type: Number, default: 0 },
   reviews: { type: Number, default: 0 },
 }, { timestamps: true });

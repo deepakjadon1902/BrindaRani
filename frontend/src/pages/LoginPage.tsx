@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 const LoginPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { login } = useStore();
+  const { login, appSettings } = useStore();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,7 +57,16 @@ const LoginPage = () => {
       <div className="w-full max-w-md px-4">
         <div className="text-center mb-8">
           <Link to="/" className="inline-block">
-            <h1 className="text-3xl font-serif font-bold gradient-text">BrindaRani</h1>
+            {appSettings.logoUrl ? (
+              <img
+                src={appSettings.logoUrl}
+                alt={`${appSettings.appName} logo`}
+                className="h-12 w-12 rounded-full object-cover border border-border mx-auto mb-3"
+              />
+            ) : null}
+            <h1 className="text-3xl font-serif font-bold gradient-text">
+              {appSettings.appName || 'Brindarani'}
+            </h1>
           </Link>
           <p className="text-muted-foreground mt-2">Welcome back</p>
         </div>
@@ -146,3 +155,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+

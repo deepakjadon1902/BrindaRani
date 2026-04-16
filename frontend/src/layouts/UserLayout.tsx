@@ -38,20 +38,23 @@ const UserLayout = () => {
     categories,
     fetchProducts,
     fetchCategories,
-    isLoadingProducts
+    isLoadingProducts,
+    appSettings,
+    fetchAppSettings
   } = useStore();
 
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const wishlistCount = wishlist.length;
 
   useEffect(() => {
+    fetchAppSettings();
     if (categories.length === 0) {
       fetchCategories();
     }
     if (products.length === 0 && !isLoadingProducts) {
       fetchProducts();
     }
-  }, [categories.length, products.length, isLoadingProducts, fetchCategories, fetchProducts]);
+  }, [categories.length, products.length, isLoadingProducts, fetchCategories, fetchProducts, fetchAppSettings]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,8 +79,15 @@ const UserLayout = () => {
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
+              {appSettings.logoUrl ? (
+                <img
+                  src={appSettings.logoUrl}
+                  alt={`${appSettings.appName} logo`}
+                  className="h-9 w-9 rounded-full object-cover border border-border"
+                />
+              ) : null}
               <span className="text-2xl md:text-3xl font-serif font-bold gradient-text">
-                BrindaRani
+                {appSettings.appName || 'Brindarani'}
               </span>
             </Link>
 
@@ -102,6 +112,12 @@ const UserLayout = () => {
                 className="text-foreground/80 hover:text-primary transition-colors font-medium"
               >
                 All Products
+              </Link>
+              <Link
+                to="/track-order"
+                className="text-foreground/80 hover:text-primary transition-colors font-medium"
+              >
+                Track Order
               </Link>
             </nav>
 
@@ -255,6 +271,13 @@ const UserLayout = () => {
               >
                 Custom Design
               </Link>
+              <Link
+                to="/track-order"
+                className="py-2 text-foreground/80 hover:text-primary"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Track Order
+              </Link>
               {!auth.isAuthenticated && (
                 <>
                   <div className="border-t border-border my-2" />
@@ -294,3 +317,4 @@ const UserLayout = () => {
 };
 
 export default UserLayout;
+

@@ -17,7 +17,7 @@ const ContactPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const whatsappMessage = `Hello BrindaRani Admin for contact form,
+    const whatsappMessage = `Hello Brindarani Admin for contact form,
 
 Name: ${formData.name}
 Email: ${formData.email}
@@ -41,7 +41,7 @@ ${formData.message}`;
     {
       icon: Mail,
       title: 'Email Us',
-      lines: ['support@brindaRani.com', 'orders@brindaRani.com'],
+      lines: ['support@Brindarani.com', 'orders@Brindarani.com'],
     },
     {
       icon: Phone,
@@ -168,7 +168,7 @@ ${formData.message}`;
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="BrindaRani Location"
+                  title="Brindarani Location"
                 />
               </div>
               <div className="bg-gradient-to-r from-primary to-secondary p-8 rounded-3xl text-primary-foreground">
@@ -188,3 +188,4 @@ ${formData.message}`;
 };
 
 export default ContactPage;
+
