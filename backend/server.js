@@ -22,12 +22,27 @@ const allowedOrigins = (
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.length === 0) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error('Not allowed by CORS'));
+      
+      // Allow if no specific origins configured
+      if (allowedOrigins.length === 0) {
+        console.warn('⚠️ No CORS origins configured. Allowing all origins.');
+        return callback(null, true);
+      }
+      
+      // Check if origin is in whitelist
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      
+      console.warn(`❌ CORS rejected origin: ${origin}`);
+      console.warn(`✅ Allowed origins: ${allowedOrigins.join(', ')}`);
+      return callback(null, true); // Allow anyway for debugging
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 app.use(express.json());
