@@ -16,6 +16,11 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
         src={category.image}
         alt={category.name}
         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        onError={(e) => {
+          const img = e.currentTarget;
+          if (img.src.endsWith('/placeholder.svg')) return;
+          img.src = '/placeholder.svg';
+        }}
       />
       
       {/* Overlay */}

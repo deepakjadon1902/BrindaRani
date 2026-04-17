@@ -48,6 +48,11 @@ const CategoryNavBar = () => {
                         loading="lazy"
                         decoding="async"
                         className="h-full w-full object-cover"
+                        onError={(e) => {
+                          const img = e.currentTarget;
+                          if (img.src.endsWith('/placeholder.svg')) return;
+                          img.src = '/placeholder.svg';
+                        }}
                       />
                     ) : (
                       <span className="text-sm font-medium text-muted-foreground">

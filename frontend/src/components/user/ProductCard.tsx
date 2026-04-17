@@ -108,6 +108,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
             src={images[activeImageIndex]}
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            onError={(e) => {
+              const img = e.currentTarget;
+              if (img.src.endsWith('/placeholder.svg')) return;
+              img.src = '/placeholder.svg';
+            }}
           />
 
           {images.length > 1 && (
@@ -125,7 +130,16 @@ const ProductCard = ({ product }: ProductCardProps) => {
                     index === activeImageIndex ? 'border-white' : 'border-white/40'
                   }`}
                 >
-                  <img src={src} alt="" className="h-full w-full object-cover" />
+                  <img
+                    src={src}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      const img = e.currentTarget;
+                      if (img.src.endsWith('/placeholder.svg')) return;
+                      img.src = '/placeholder.svg';
+                    }}
+                  />
                 </button>
               ))}
             </div>

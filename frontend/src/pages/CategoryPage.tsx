@@ -52,6 +52,11 @@ const CategoryPage = () => {
             src={category.image}
             alt={category.name}
             className="w-full h-full object-cover"
+            onError={(e) => {
+              const img = e.currentTarget;
+              if (img.src.endsWith('/placeholder.svg')) return;
+              img.src = '/placeholder.svg';
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
           <div className="absolute inset-0 flex items-center">

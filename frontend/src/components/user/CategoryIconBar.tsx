@@ -69,6 +69,12 @@ const CategoryIconBar = () => {
                     loading="eager"
                     decoding="async"
                     onLoad={() => handleImageLoad(category.id)}
+                    onError={(e) => {
+                      const img = e.currentTarget;
+                      if (!loadedImages[category.id]) handleImageLoad(category.id);
+                      if (img.src.endsWith('/placeholder.svg')) return;
+                      img.src = '/placeholder.svg';
+                    }}
                     className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
                       loadedImages[category.id] ? 'opacity-100' : 'opacity-0'
                     }`}

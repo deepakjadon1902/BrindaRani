@@ -1,6 +1,7 @@
 const express = require('express');
 const Product = require('../models/Product');
 const { authenticate, adminOnly } = require('../middleware/auth');
+const { normalizeStoredAssetUrl } = require('../utils/assetUrl');
 
 const router = express.Router();
 
@@ -49,7 +50,11 @@ router.get('/:id', async (req, res) => {
 // POST /api/products - Create product (admin only)
 router.post('/', authenticate, adminOnly, async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+    const payload = { ...req.body };
+    if (Array.isArray(payload.images)) {
+      payload.images = payload.images.map((img) => normalizeStoredAssetUrl(img)).filter(Boolean);
+    }
+    const product = await Product.create(payload);
     res.status(201).json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -59,7 +64,11 @@ router.post('/', authenticate, adminOnly, async (req, res) => {
 // PUT /api/products/:id - Update product (admin only)
 router.put('/:id', authenticate, adminOnly, async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const payload = { ...req.body };
+    if (Array.isArray(payload.images)) {
+      payload.images = payload.images.map((img) => normalizeStoredAssetUrl(img)).filter(Boolean);
+    }
+    const product = await Product.findByIdAndUpdate(req.params.id, payload, { new: true });
     if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json(product);
   } catch (error) {

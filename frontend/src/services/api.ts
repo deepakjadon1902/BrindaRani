@@ -22,13 +22,34 @@ export const setToken = (token: string | null) => {
 export const getToken = () => authToken;
 export const resolveAssetUrl = (url?: string) => {
   if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-    return url;
+  const trimmed = String(url).trim();
+  if (!trimmed) return '';
+  if (trimmed.startsWith('data:')) return trimmed;
+
+  const normalizedSlashes = trimmed.replace(/\\/g, '/');
+
+  // If the DB contains an absolute URL to a previous environment (e.g. localhost),
+  // but the path is "/uploads/...", rewrite it to the current API origin.
+  if (normalizedSlashes.startsWith('http://') || normalizedSlashes.startsWith('https://')) {
+    try {
+      const parsed = new URL(normalizedSlashes);
+      const pathname = parsed.pathname || '';
+      const uploadsIndex = pathname.indexOf('/uploads/');
+      if (uploadsIndex !== -1) return `${API_ORIGIN}${pathname.slice(uploadsIndex)}`;
+    } catch {
+      // ignore
+    }
+    return normalizedSlashes;
   }
-  if (url.startsWith('/')) {
-    return `${API_ORIGIN}${url}`;
-  }
-  return url;
+
+  // Normalize relative uploads paths to be served by the backend
+  if (normalizedSlashes.startsWith('uploads/')) return `${API_ORIGIN}/${normalizedSlashes}`;
+  if (normalizedSlashes.startsWith('/uploads/')) return `${API_ORIGIN}${normalizedSlashes}`;
+
+  // For other absolute paths (e.g. frontend public assets), keep as-is
+  if (normalizedSlashes.startsWith('/')) return normalizedSlashes;
+
+  return normalizedSlashes;
 };
 
 // Generic fetch wrapper

@@ -158,7 +158,16 @@ const AdminCategories = () => {
                   <td className="font-medium">{category.name}</td>
                   <td>
                     {category.image ? (
-                      <img src={category.image} alt={category.name} className="w-12 h-12 rounded-md object-cover border border-border" />
+                      <img
+                        src={category.image}
+                        alt={category.name}
+                        className="w-12 h-12 rounded-md object-cover border border-border"
+                        onError={(e) => {
+                          const img = e.currentTarget;
+                          if (img.src.endsWith('/placeholder.svg')) return;
+                          img.src = '/placeholder.svg';
+                        }}
+                      />
                     ) : (
                       <span className="text-xs text-muted-foreground">No image</span>
                     )}
@@ -199,6 +208,11 @@ const AdminCategories = () => {
                   src={imagePreview || form.image}
                   alt="Category preview"
                   className="mt-3 h-24 w-24 rounded-md object-cover border border-border"
+                  onError={(e) => {
+                    const img = e.currentTarget;
+                    if (img.src.endsWith('/placeholder.svg')) return;
+                    img.src = '/placeholder.svg';
+                  }}
                 />
               )}
               <p className="text-xs text-muted-foreground mt-2">Only uploads from device are allowed.</p>

@@ -7,6 +7,7 @@ const Settings = require('../models/Settings');
 const { authenticate } = require('../middleware/auth');
 const { sendVerificationEmail } = require('../utils/mailer');
 const passport = require('../config/passport');
+const { normalizeStoredAssetUrl } = require('../utils/assetUrl');
 
 const router = express.Router();
 
@@ -201,9 +202,10 @@ router.get('/me', authenticate, async (req, res) => {
 router.put('/profile', authenticate, async (req, res) => {
   try {
     const { name, phone, address, city, district, state, country, pincode, avatar } = req.body;
+    const normalizedAvatar = typeof avatar === 'string' ? normalizeStoredAssetUrl(avatar) : avatar;
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { name, phone, address, city, district, state, country, pincode, avatar },
+      { name, phone, address, city, district, state, country, pincode, avatar: normalizedAvatar },
       { new: true }
     );
     res.json({ user });

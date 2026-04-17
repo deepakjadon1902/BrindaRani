@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const Settings = require('../models/Settings');
 const { authenticate, adminOnly } = require('../middleware/auth');
+const { normalizeStoredAssetUrl } = require('../utils/assetUrl');
 
 const router = express.Router();
 
@@ -57,6 +58,14 @@ router.put('/', authenticate, adminOnly, async (req, res) => {
     const payload = { ...req.body };
     delete payload.adminPassword;
     delete payload.adminEmail;
+
+    if (typeof payload.logoUrl === 'string') {
+      payload.logoUrl = normalizeStoredAssetUrl(payload.logoUrl);
+    }
+    if (typeof payload.faviconUrl === 'string') {
+      payload.faviconUrl = normalizeStoredAssetUrl(payload.faviconUrl);
+    }
+
     const settings = await ensureSettings();
     Object.assign(settings, payload);
     await settings.save();
