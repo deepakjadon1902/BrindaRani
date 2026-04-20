@@ -67,39 +67,34 @@ const UserLayout = () => {
     <div className="min-h-screen flex flex-col">
       {/* Navbar */}
       <header className="navbar-glass">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-3 sm:px-4">
           <div className="flex items-center justify-between h-16 md:h-20">
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2 -ml-2"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            {/* Left: Mobile Menu + Logo */}
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              <button
+                className="md:hidden p-2 -ml-2"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              >
+                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
 
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2">
-              {appSettings.logoUrl ? (
-                <img
-                  src={appSettings.logoUrl}
-                  alt={`${appSettings.appName} logo`}
-                  className="h-9 w-9 rounded-full object-cover border border-border"
-                />
-              ) : null}
-              <span className="text-2xl md:text-3xl font-serif font-bold gradient-text">
-                {appSettings.appName || 'Brindarani'}
-              </span>
-            </Link>
+              <Link to="/" className="flex items-center gap-2 sm:gap-3">
+                {appSettings.logoUrl ? (
+                  <img
+                    src={appSettings.logoUrl}
+                    alt={`${appSettings.appName} logo`}
+                    className="h-9 w-9 rounded-full object-cover border border-border"
+                  />
+                ) : null}
+                <span className="hidden sm:inline text-2xl md:text-3xl font-serif font-bold gradient-text whitespace-nowrap">
+                  {appSettings.appName || 'Brindarani'}
+                </span>
+              </Link>
+            </div>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
-              <Link 
-                to="/" 
-                className="text-foreground/80 hover:text-primary transition-colors font-medium"
-              >
-                Home
-              </Link>
-              
               <Link 
                 to="/custom-design" 
                 className="text-foreground/80 hover:text-primary transition-colors font-medium"
@@ -250,13 +245,6 @@ const UserLayout = () => {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-border animate-fade-in">
             <nav className="container mx-auto px-4 py-4 flex flex-col gap-2">
-              <Link 
-                to="/" 
-                className="py-2 text-foreground/80 hover:text-primary"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
               <Link 
                 to="/products" 
                 className="py-2 text-foreground/80 hover:text-primary"

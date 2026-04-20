@@ -145,18 +145,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             </div>
           )}
           
-          {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {product.isTrending && (
-              <span className="badge-trending">Trending</span>
-            )}
-            {product.isLatest && (
-              <span className="badge-new">New</span>
-            )}
-            {product.isVrindavanSpecial && (
-              <span className="badge-vrindavan">Vrindavan Special</span>
-            )}
-          </div>
+          {/* Badges intentionally hidden on product cards (keeps UI clean) */}
 
           {/* Quick Actions */}
           <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
