@@ -147,7 +147,7 @@ const AdminProducts = () => {
     let imageUrls = [...form.images];
     if (imageFiles.length > 0) {
       try {
-        const { urls } = await uploadAPI.uploadImages(imageFiles);
+        const { urls } = await uploadAPI.uploadImages(imageFiles, 'products');
         imageUrls = [...imageUrls, ...(urls || []).map((url: string) => resolveAssetUrl(url))];
       } catch {
         toast.error('Image upload failed');

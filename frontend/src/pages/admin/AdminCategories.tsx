@@ -89,7 +89,7 @@ const AdminCategories = () => {
     let imageUrl = form.image.trim();
     if (imageFile) {
       try {
-        const { urls } = await uploadAPI.uploadImages([imageFile]);
+        const { urls } = await uploadAPI.uploadImages([imageFile], 'categories');
         imageUrl = resolveAssetUrl(urls?.[0] || imageUrl);
       } catch {
         toast.error('Image upload failed');

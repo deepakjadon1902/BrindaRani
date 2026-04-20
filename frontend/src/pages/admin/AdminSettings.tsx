@@ -138,11 +138,11 @@ const AdminSettings = () => {
       let logoUrl = form.logoUrl;
       let faviconUrl = form.faviconUrl;
       if (logoFile) {
-        const { urls } = await uploadAPI.uploadImages([logoFile]);
+        const { urls } = await uploadAPI.uploadImages([logoFile], 'site');
         logoUrl = resolveAssetUrl(urls?.[0] || logoUrl);
       }
       if (faviconFile) {
-        const { urls } = await uploadAPI.uploadImages([faviconFile]);
+        const { urls } = await uploadAPI.uploadImages([faviconFile], 'site');
         faviconUrl = resolveAssetUrl(urls?.[0] || faviconUrl);
       }
 

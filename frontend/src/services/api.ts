@@ -190,10 +190,11 @@ export const usersAPI = {
 
 // ========== UPLOAD API ==========
 export const uploadAPI = {
-  uploadImages: (files: File[]) => {
+  uploadImages: (files: File[], folder?: 'categories' | 'products' | 'profiles' | 'site' | 'misc') => {
     const formData = new FormData();
     files.forEach(file => formData.append('images', file));
-    return apiFetch('/upload', { method: 'POST', body: formData });
+    const query = folder ? `?folder=${encodeURIComponent(folder)}` : '';
+    return apiFetch(`/upload${query}`, { method: 'POST', body: formData });
   },
 
   uploadProfileImage: (file: File) => {

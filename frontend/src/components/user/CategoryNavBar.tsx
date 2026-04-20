@@ -19,8 +19,8 @@ const CategoryNavBar = () => {
     <div className="relative">
       {/* Category Strip - Icons */}
       <div className="bg-muted/60 border-b border-border">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide py-3">
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="flex w-full items-center gap-4 overflow-x-auto scrollbar-hide py-3 justify-start sm:justify-center">
             {visibleCategories.map((category) => {
               const isActive = activeCategory === category.name;
               return (
@@ -60,7 +60,7 @@ const CategoryNavBar = () => {
                       </span>
                     )}
                   </span>
-                  <span className="text-[11px] font-medium text-center leading-tight">
+                  <span className="text-xs md:text-sm font-medium text-center leading-tight">
                     {category.name}
                   </span>
                 </Link>
