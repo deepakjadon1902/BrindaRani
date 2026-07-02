@@ -15,14 +15,14 @@ const Index = () => {
     fetchCategories();
   }, []);
 
-  const trendingProducts = products.filter(p => p.isTrending).slice(0, 4);
-  const latestProducts = products.filter(p => p.isLatest).slice(0, 4);
+  const trendingProducts = products.filter(p => p.isTrending).slice(0, 6);
+  const latestProducts = products.filter(p => p.isLatest).slice(0, 6);
   const newArrivalProducts = [...products]
     .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
-    .slice(0, 4);
+    .slice(0, 6);
   const vrindavanSpecials = products
     .filter(p => p.isVrindavanSpecial)
-    .slice(0, 4);
+    .slice(0, 6);
 
   return (
     <div>
@@ -37,7 +37,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">
-              🙏 Our Story
+               Our Story
             </span>
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-6">
               Sacred Craftsmanship, Delivered to Your Doorstep
@@ -129,7 +129,7 @@ const Index = () => {
                   Free Delivery Pan India
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  On orders above ₹999. Carefully packed with divine care, delivered to your doorstep.
+                  On orders above ₹499. Carefully packed with divine care, delivered to your doorstep.
                 </p>
               </div>
               <Button asChild variant="outline" size="sm" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground mt-4 w-fit">
@@ -180,7 +180,7 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5 md:gap-4">
             {trendingProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -202,7 +202,7 @@ const Index = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-primary-foreground">
             <div>
               <h3 className="text-2xl md:text-3xl font-serif font-bold mb-2">
-                🪔 Handcrafted with Divine Love
+                 Handcrafted with Divine Love
               </h3>
               <p className="text-primary-foreground/80">
                 Each product is blessed and crafted by skilled artisans from Vrindavan
@@ -235,7 +235,7 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5 md:gap-4">
             {latestProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -261,7 +261,7 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5 md:gap-4">
             {newArrivalProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -287,7 +287,7 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5 md:gap-4">
             {vrindavanSpecials.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -296,8 +296,8 @@ const Index = () => {
       </section>
 
       {/* Why Choose Brindarani */}
-      <section className="py-16 md:py-20">
-        <div className="container mx-auto px-4">
+      <section className="py-12 md:py-18">
+        <div className="container mx-auto px-2">
           <div className="text-center mb-12">
             <span className="text-sm text-primary font-medium uppercase tracking-wider mb-2 block">
               Why Devotees Trust Us
@@ -346,8 +346,8 @@ const Index = () => {
       </section>
 
       {/* Testimonials / Social Proof */}
-      <section className="py-14 md:py-20 bg-muted/30 border-t border-border">
-        <div className="container mx-auto px-4">
+      <section className="py-12 md:py-18 bg-muted/30 border-t border-border">
+        <div className="container mx-auto px-2">
           <div className="text-center mb-10">
             <span className="text-sm text-primary font-medium uppercase tracking-wider mb-2 block">
               Devotee Reviews

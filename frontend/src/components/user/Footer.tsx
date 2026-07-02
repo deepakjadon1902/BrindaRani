@@ -388,14 +388,11 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="border-t border-background/20 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-background/60 text-sm">
-              (c) 2024 {appSettings.appName || 'Brindarani'}. All rights reserved.
-            </p>
-            <p className="text-background/60 text-sm">
-              Made with love in Vrindavan
-            </p>
-          </div>
+          <div className="border-t border-background/20 mt-8 pt-8 flex justify-center items-center">
+  <p className="text-background/60 text-sm text-center">
+    &copy; 2026 {appSettings.appName || "Brindarani"}. All rights reserved. • Made with ❤️ in Vrindavan
+  </p>
+</div>
         </div>
       </footer>
 

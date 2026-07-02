@@ -97,7 +97,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   return (
     <Link
       to={`/product/${product.id}`}
-      className="group"
+      className="group min-w-0"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
@@ -116,7 +116,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           />
 
           {images.length > 1 && (
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-black/40 px-2 py-1 opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 hidden md:flex items-center gap-1 rounded-full bg-black/40 px-2 py-1 opacity-0 transition-opacity group-hover:opacity-100">
               {images.slice(0, 5).map((src, index) => (
                 <button
                   key={`${product.id}-thumb-${index}`}
@@ -148,55 +148,56 @@ const ProductCard = ({ product }: ProductCardProps) => {
           {/* Badges intentionally hidden on product cards (keeps UI clean) */}
 
           {/* Quick Actions */}
-          <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute top-1.5 right-1.5 flex flex-col gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
             <button
               onClick={handleAddToWishlist}
-              className={`p-2 rounded-full bg-white shadow-md transition-colors ${
+              aria-label={isInWishlist ? 'Already in wishlist' : `Add ${product.name} to wishlist`}
+              className={`p-1.5 rounded-full bg-white/95 shadow-md transition-colors ${
                 isInWishlist ? 'text-secondary' : 'text-muted-foreground hover:text-secondary'
               }`}
             >
-              <Heart size={18} fill={isInWishlist ? 'currentColor' : 'none'} />
+              <Heart size={15} fill={isInWishlist ? 'currentColor' : 'none'} />
             </button>
           </div>
 
         </div>
 
         {/* Content */}
-        <div className="p-4">
-          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+        <div className="p-2 md:p-3">
+          <p className="hidden sm:block text-[10px] md:text-xs text-muted-foreground uppercase tracking-wide mb-1 truncate">
             {product.category}
           </p>
-          <h3 className="font-semibold text-foreground line-clamp-2 mb-2 group-hover:text-primary transition-colors">
+          <h3 className="text-xs md:text-sm font-semibold text-foreground line-clamp-2 min-h-8 md:min-h-10 mb-1.5 group-hover:text-primary transition-colors leading-tight">
             {product.name}
           </h3>
 
           {/* Rating */}
-          <div className="flex items-center gap-1 mb-2">
-            <Star size={14} className="fill-primary text-primary" />
-            <span className="text-sm font-medium">{product.rating}</span>
-            <span className="text-xs text-muted-foreground">
-              ({product.reviews} reviews)
+          <div className="flex items-center gap-0.5 mb-1.5 min-w-0">
+            <Star size={12} className="shrink-0 fill-primary text-primary" />
+            <span className="text-[11px] md:text-xs font-medium">{product.rating}</span>
+            <span className="hidden md:inline truncate text-[10px] text-muted-foreground">
+              ({product.reviews})
             </span>
           </div>
 
           {/* Price */}
           <div className="flex items-baseline gap-1">
-            <span className="text-lg font-bold text-primary">
+            <span className="text-sm md:text-base font-bold text-primary truncate">
               ₹{lowestPrice.toLocaleString()}
             </span>
             {lowestPrice !== highestPrice && (
-              <span className="text-sm text-muted-foreground">
+              <span className="hidden lg:inline text-xs text-muted-foreground">
                 - ₹{highestPrice.toLocaleString()}
               </span>
             )}
           </div>
 
-          <div className="mt-3 grid grid-cols-2 gap-2">
+          <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-1.5">
             <Button
               onClick={handleAddToCart}
               variant="outline"
               size="sm"
-              className="w-full"
+              className="hidden md:inline-flex w-full h-8 px-1 text-xs"
             >
               Add to Cart
             </Button>
@@ -204,7 +205,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
               onClick={handleBuyNow}
               variant="secondary"
               size="sm"
-              className="w-full"
+              className="w-full h-8 px-1 text-[10px] md:text-xs"
             >
               Buy Now
             </Button>

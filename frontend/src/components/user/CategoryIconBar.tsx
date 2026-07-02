@@ -35,8 +35,8 @@ const CategoryIconBar = () => {
   }, []);
 
   return (
-    <section className="py-8 md:py-12 border-b border-border bg-background">
-      <div className="container mx-auto px-4">
+    <section className="py-2 border-b border-border bg-background">
+      <div className="container mx-auto px-1">
         <div
           className={`text-center mb-6 transition-all duration-500 ease-out ${
             isMounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
@@ -53,16 +53,16 @@ const CategoryIconBar = () => {
           className={`grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 justify-items-center transition-all duration-500 ease-out ${
             isMounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
           }`}
-          style={{ minHeight: '120px' }}
+          style={{ minHeight: '140px' }}
         >
           {visibleCategories.map((category) => (
             <Link
               key={category.id}
               to={`/category/${encodeURIComponent(category.name)}`}
-              className="group flex flex-col items-center gap-2 text-xs font-medium text-muted-foreground hover:text-primary transition-all duration-200"
+              className="group flex flex-col items-center gap-3 text-sm md:text-base font-medium text-muted-foreground hover:text-primary transition-all duration-200"
             >
               {category.image ? (
-                <span className="relative w-12 h-12 rounded-full border border-border group-hover:border-primary/40 overflow-hidden bg-muted/60">
+                <span className="relative w-14 h-14 md:w-16 md:h-16 rounded-full border border-border group-hover:border-primary/40 overflow-hidden bg-muted/60">
                   <img
                     src={category.image}
                     alt={category.name}
@@ -82,7 +82,7 @@ const CategoryIconBar = () => {
                   <span className="absolute inset-0 bg-gradient-to-br from-primary/15 to-secondary/10" />
                 </span>
               ) : (
-                <span className="w-12 h-12 rounded-full bg-primary/10 text-primary text-sm flex items-center justify-center group-hover:bg-primary/15">
+                <span className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-primary/10 text-primary text-base md:text-lg flex items-center justify-center group-hover:bg-primary/15">
                   {category.name.charAt(0)}
                 </span>
               )}
