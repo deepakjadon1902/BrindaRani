@@ -28,6 +28,8 @@ const ProductsPage = () => {
   }, [categories.length, products.length, isLoadingProducts, fetchCategories, fetchProducts]);
   
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [showFilters, setShowFilters] = useState(false);
 
@@ -68,6 +70,13 @@ const ProductsPage = () => {
       result = result.filter(p => selectedCategories.includes(p.category));
     }
 
+    const minimum = minPrice === '' ? null : Number(minPrice);
+    const maximum = maxPrice === '' ? null : Number(maxPrice);
+    result = result.filter((product) => {
+      const productPrice = Math.min(...product.sizes.map((size) => size.price));
+      return (minimum === null || productPrice >= minimum) && (maximum === null || productPrice <= maximum);
+    });
+
     // Apply sorting
     switch (sortBy) {
       case 'price-low':
@@ -87,7 +96,7 @@ const ProductsPage = () => {
     }
 
     return result;
-  }, [products, searchQuery, searchParam, filterParam, selectedCategories, sortBy]);
+  }, [products, searchQuery, searchParam, filterParam, selectedCategories, minPrice, maxPrice, sortBy]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories(prev => 
@@ -99,6 +108,8 @@ const ProductsPage = () => {
 
   const clearFilters = () => {
     setSelectedCategories([]);
+    setMinPrice('');
+    setMaxPrice('');
     setSearchQuery('');
   };
 
@@ -124,7 +135,7 @@ const ProductsPage = () => {
             <div className="card-premium p-6 sticky top-24">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-semibold">Filters</h3>
-                {selectedCategories.length > 0 && (
+                {(selectedCategories.length > 0 || minPrice || maxPrice) && (
                   <button 
                     onClick={clearFilters}
                     className="text-sm text-primary hover:underline"
@@ -132,6 +143,14 @@ const ProductsPage = () => {
                     Clear all
                   </button>
                 )}
+              </div>
+
+              <div className="mb-6">
+                <label className="text-sm font-medium mb-3 block">Price range</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input type="number" min="0" placeholder="Min ₹" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} aria-label="Minimum price" />
+                  <Input type="number" min="0" placeholder="Max ₹" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} aria-label="Maximum price" />
+                </div>
               </div>
 
               {/* Search */}
@@ -258,6 +277,14 @@ const ProductsPage = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+            </div>
+
+            <div className="mb-6">
+              <label className="text-sm font-medium mb-3 block">Price range</label>
+              <div className="grid grid-cols-2 gap-2">
+                <Input type="number" min="0" placeholder="Min ₹" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} aria-label="Minimum price" />
+                <Input type="number" min="0" placeholder="Max ₹" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} aria-label="Maximum price" />
+              </div>
             </div>
 
             {/* Categories */}

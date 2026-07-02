@@ -1,17 +1,28 @@
 const express = require('express');
 const Product = require('../models/Product');
+const Category = require('../models/Category');
 const { authenticate, adminOnly } = require('../middleware/auth');
 const { normalizeStoredAssetUrl } = require('../utils/assetUrl');
 
 const router = express.Router();
 
+const validateClassification = async (payload) => {
+  const category = await Category.findOne({ name: payload.category });
+  if (!category) return 'Selected category does not exist';
+  if (payload.subcategory && !category.subcategories.includes(payload.subcategory)) {
+    return 'Selected subcategory does not belong to this category';
+  }
+  return null;
+};
+
 // GET /api/products - Get all products (public)
 router.get('/', async (req, res) => {
   try {
-    const { category, search, trending, latest, vrindavanSpecial, sort } = req.query;
+    const { category, subcategory, search, trending, latest, vrindavanSpecial, sort } = req.query;
     let query = {};
 
     if (category) query.category = category;
+    if (subcategory) query.subcategory = subcategory;
     if (trending === 'true') query.isTrending = true;
     if (latest === 'true') query.isLatest = true;
     if (vrindavanSpecial === 'true') query.isVrindavanSpecial = true;
@@ -54,6 +65,8 @@ router.post('/', authenticate, adminOnly, async (req, res) => {
     if (Array.isArray(payload.images)) {
       payload.images = payload.images.map((img) => normalizeStoredAssetUrl(img)).filter(Boolean);
     }
+    const classificationError = await validateClassification(payload);
+    if (classificationError) return res.status(400).json({ message: classificationError });
     const product = await Product.create(payload);
     res.status(201).json(product);
   } catch (error) {
@@ -68,6 +81,10 @@ router.put('/:id', authenticate, adminOnly, async (req, res) => {
     if (Array.isArray(payload.images)) {
       payload.images = payload.images.map((img) => normalizeStoredAssetUrl(img)).filter(Boolean);
     }
+    const existing = await Product.findById(req.params.id);
+    if (!existing) return res.status(404).json({ message: 'Product not found' });
+    const classificationError = await validateClassification({ ...existing.toObject(), ...payload });
+    if (classificationError) return res.status(400).json({ message: classificationError });
     const product = await Product.findByIdAndUpdate(req.params.id, payload, { new: true });
     if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json(product);

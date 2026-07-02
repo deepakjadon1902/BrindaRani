@@ -23,7 +23,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative h-[60vh] md:h-[80vh] overflow-hidden bg-muted">
+    <section className="relative w-full aspect-[1920/532] min-h-[360px] max-h-[532px] overflow-hidden bg-muted">
       {/* Slides */}
       {banners.map((banner, index) => (
         <div
@@ -82,6 +82,7 @@ const HeroSection = () => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
+        aria-label="Previous hero slide"
         className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 backdrop-blur-sm
                  hover:bg-white/20 transition-colors hidden md:flex"
       >
@@ -89,6 +90,7 @@ const HeroSection = () => {
       </button>
       <button
         onClick={nextSlide}
+        aria-label="Next hero slide"
         className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 backdrop-blur-sm
                  hover:bg-white/20 transition-colors hidden md:flex"
       >
@@ -101,6 +103,7 @@ const HeroSection = () => {
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
+            aria-label={`Go to hero slide ${index + 1}`}
             className={`h-2 rounded-full transition-all duration-300 ${
               index === currentSlide
                 ? 'w-8 bg-primary'

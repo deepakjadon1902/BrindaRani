@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import ProductCard from '@/components/user/ProductCard';
 
 const CategoryPage = () => {
   const { name } = useParams();
+  const [searchParams] = useSearchParams();
   const { products, categories, fetchProducts, fetchCategories, isLoadingProducts } = useStore();
 
   useEffect(() => {
@@ -19,7 +20,10 @@ const CategoryPage = () => {
 
   const decodedName = decodeURIComponent(name || '');
   const category = categories.find(c => c.name === decodedName);
-  const categoryProducts = products.filter(p => p.category === decodedName);
+  const selectedSubcategory = searchParams.get('subcategory') || '';
+  const categoryProducts = products.filter(p =>
+    p.category === decodedName && (!selectedSubcategory || p.subcategory === selectedSubcategory)
+  );
 
   if (!category) {
     return (
@@ -78,7 +82,7 @@ const CategoryPage = () => {
             {category.subcategories.map((sub) => (
               <Link
                 key={sub}
-                to={`/products?search=${encodeURIComponent(sub)}`}
+                to={`/category/${encodeURIComponent(category.name)}?subcategory=${encodeURIComponent(sub)}`}
                 className="px-4 py-2 rounded-full border border-border bg-card 
                          hover:border-primary hover:text-primary transition-colors"
               >
@@ -92,7 +96,7 @@ const CategoryPage = () => {
         <div>
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-xl font-semibold">
-              All {category.name} ({categoryProducts.length})
+              {selectedSubcategory || `All ${category.name}`} ({categoryProducts.length})
             </h2>
           </div>
 

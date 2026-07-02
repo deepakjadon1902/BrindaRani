@@ -5,6 +5,14 @@ const { normalizeStoredAssetUrl } = require('../utils/assetUrl');
 
 const router = express.Router();
 
+const cleanCategoryPayload = (body) => {
+  const payload = { ...body };
+  if (Array.isArray(payload.subcategories)) {
+    payload.subcategories = [...new Set(payload.subcategories.map((value) => String(value).trim()).filter(Boolean))];
+  }
+  return payload;
+};
+
 // GET /api/categories - Get all categories (public)
 router.get('/', async (req, res) => {
   try {
@@ -18,7 +26,7 @@ router.get('/', async (req, res) => {
 // POST /api/categories - Create category (admin)
 router.post('/', authenticate, adminOnly, async (req, res) => {
   try {
-    const payload = { ...req.body };
+    const payload = cleanCategoryPayload(req.body);
     if (typeof payload.image === 'string') {
       payload.image = normalizeStoredAssetUrl(payload.image);
     }
@@ -32,7 +40,7 @@ router.post('/', authenticate, adminOnly, async (req, res) => {
 // PUT /api/categories/:id - Update category (admin)
 router.put('/:id', authenticate, adminOnly, async (req, res) => {
   try {
-    const payload = { ...req.body };
+    const payload = cleanCategoryPayload(req.body);
     if (typeof payload.image === 'string') {
       payload.image = normalizeStoredAssetUrl(payload.image);
     }

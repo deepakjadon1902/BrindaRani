@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import type { Product } from '@/data/mockData';
 import { uploadAPI, resolveAssetUrl } from '@/services/api';
@@ -69,6 +70,7 @@ const AdminProducts = () => {
     () => products.filter((p) => p.name.toLowerCase().includes(search.toLowerCase())),
     [products, search]
   );
+  const selectedCategory = categories.find((category) => category.name === form.category);
 
   const openCreate = () => {
     setEditingId(null);
@@ -263,21 +265,27 @@ const AdminProducts = () => {
             </div>
             <div>
               <Label>Category</Label>
-              <Input
-                list="category-options"
-                value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
-                placeholder="Type or pick category"
-              />
-              <datalist id="category-options">
-                {categories.map((category) => (
-                  <option key={category.id} value={category.name} />
-                ))}
-              </datalist>
+              <Select value={form.category} onValueChange={(category) => setForm({ ...form, category, subcategory: '' })}>
+                <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => <SelectItem key={category.id} value={category.name}>{category.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Subcategory</Label>
-              <Input value={form.subcategory} onChange={(e) => setForm({ ...form, subcategory: e.target.value })} />
+              <Select
+                value={form.subcategory}
+                onValueChange={(subcategory) => setForm({ ...form, subcategory })}
+                disabled={!selectedCategory || selectedCategory.subcategories.length === 0}
+              >
+                <SelectTrigger><SelectValue placeholder={selectedCategory ? 'Select a subcategory' : 'Select a category first'} /></SelectTrigger>
+                <SelectContent>
+                  {(selectedCategory?.subcategories || []).map((subcategory) => (
+                    <SelectItem key={subcategory} value={subcategory}>{subcategory}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Description</Label>

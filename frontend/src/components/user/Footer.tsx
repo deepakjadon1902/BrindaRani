@@ -294,7 +294,7 @@ const Footer = () => {
                   <img
                     src={appSettings.logoUrl}
                     alt={`${appSettings.appName} logo`}
-                    className="h-8 w-8 rounded-full object-cover border border-background/20"
+                    className="h-16 w-16 rounded-full object-cover border border-background/20 shadow-md"
                   />
                 ) : null}
                 <h3 className="text-2xl font-serif font-bold text-background">

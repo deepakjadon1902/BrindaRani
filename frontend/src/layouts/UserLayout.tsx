@@ -6,7 +6,10 @@ import {
   ShoppingCart, 
   User, 
   Menu, 
-  X
+  X,
+  Palette,
+  PackageSearch,
+  Boxes
 } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { Button } from '@/components/ui/button';
@@ -68,7 +71,7 @@ const UserLayout = () => {
       {/* Navbar */}
       <header className="navbar-glass">
         <div className="container mx-auto px-3 sm:px-4">
-          <div className="flex items-center justify-between h-16 md:h-20">
+          <div className="flex items-center gap-3 lg:gap-6 h-20 md:h-24">
             {/* Left: Mobile Menu + Logo */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               <button
@@ -79,47 +82,21 @@ const UserLayout = () => {
                 {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
 
-              <Link to="/" className="flex items-center gap-2 sm:gap-3">
+              <Link to="/" className="flex items-center" aria-label={`${appSettings.appName || 'Brindarani'} home`}>
                 {appSettings.logoUrl ? (
                   <img
                     src={appSettings.logoUrl}
                     alt={`${appSettings.appName} logo`}
-                    className="h-9 w-9 rounded-full object-cover border border-border"
+                    className="h-14 w-14 md:h-16 md:w-16 rounded-full object-cover border border-border shadow-sm"
                   />
                 ) : null}
-                <span className="hidden sm:inline text-2xl md:text-3xl font-serif font-bold gradient-text whitespace-nowrap">
-                  {appSettings.appName || 'Brindarani'}
-                </span>
               </Link>
             </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-8">
-              <Link 
-                to="/custom-design" 
-                className="text-foreground/80 hover:text-primary transition-colors font-medium"
-              >
-                Custom Design
-              </Link>
-
-              <Link 
-                to="/products" 
-                className="text-foreground/80 hover:text-primary transition-colors font-medium"
-              >
-                All Products
-              </Link>
-              <Link
-                to="/track-order"
-                className="text-foreground/80 hover:text-primary transition-colors font-medium"
-              >
-                Track Order
-              </Link>
-            </nav>
 
             {/* Search Bar - Desktop */}
             <form 
               onSubmit={handleSearch}
-              className="hidden lg:flex items-center flex-1 max-w-md mx-8"
+              className="hidden lg:flex items-center flex-1 max-w-xl"
             >
               <div className="relative w-full">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
@@ -133,6 +110,18 @@ const UserLayout = () => {
               </div>
             </form>
 
+            <nav className="hidden md:flex items-center gap-4 lg:gap-6 ml-auto">
+              <Link to="/custom-design" className="flex items-center gap-1.5 text-sm text-foreground/80 hover:text-primary transition-colors font-medium whitespace-nowrap">
+                <Palette size={18} aria-hidden="true" /> Custom Design
+              </Link>
+              <Link to="/products" className="flex items-center gap-1.5 text-sm text-foreground/80 hover:text-primary transition-colors font-medium whitespace-nowrap">
+                <Boxes size={18} aria-hidden="true" /> All Products
+              </Link>
+              <Link to="/track-order" className="flex items-center gap-1.5 text-sm text-foreground/80 hover:text-primary transition-colors font-medium whitespace-nowrap">
+                <PackageSearch size={18} aria-hidden="true" /> Track Orders
+              </Link>
+            </nav>
+
             {/* Right Actions */}
             <div className="flex items-center gap-2 md:gap-4">
               {/* Mobile Search Toggle */}
@@ -144,7 +133,7 @@ const UserLayout = () => {
               </button>
 
               {/* Wishlist */}
-              <Link to="/wishlist" className="p-2 relative group">
+              <Link to="/wishlist" className="p-2 relative group" aria-label={`Wishlist, ${wishlistCount} items`} title="Wishlist">
                 <Heart 
                   size={22} 
                   className="text-foreground/80 group-hover:text-secondary transition-colors"
@@ -159,7 +148,7 @@ const UserLayout = () => {
               </Link>
 
               {/* Cart */}
-              <Link to="/cart" className="p-2 relative group">
+              <Link to="/cart" className="p-2 relative group" aria-label={`Shopping cart, ${cartCount} items`} title="Shopping cart">
                 <ShoppingCart 
                   size={22} 
                   className="text-foreground/80 group-hover:text-primary transition-colors"
@@ -177,7 +166,7 @@ const UserLayout = () => {
               {auth.isAuthenticated ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="p-2">
+                    <button className="p-2" aria-label="My account" title="My account">
                       <User size={22} className="text-foreground/80" />
                     </button>
                   </DropdownMenuTrigger>
