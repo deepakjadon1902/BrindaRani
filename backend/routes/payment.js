@@ -20,8 +20,9 @@ const generateOrderCode = async () => {
 
 const getRazorpayClient = async () => {
   const settings = await Settings.findOne();
-  const key_id = settings?.paymentKeyId || process.env.RAZORPAY_KEY_ID;
-  const key_secret = settings?.paymentKeySecret || process.env.RAZORPAY_KEY_SECRET;
+  // Deployment secrets are authoritative; database settings are a legacy fallback.
+  const key_id = process.env.RAZORPAY_KEY_ID || settings?.paymentKeyId;
+  const key_secret = process.env.RAZORPAY_KEY_SECRET || settings?.paymentKeySecret;
   if (!key_id || !key_secret) {
     throw new Error('Razorpay keys are not configured');
   }
@@ -32,11 +33,19 @@ const getRazorpayClient = async () => {
 router.post('/create-order', authenticate, async (req, res) => {
   try {
     const { amount, currency = 'INR', receipt, orderData } = req.body;
+    const numericAmount = Number(amount);
+    if (!Number.isFinite(numericAmount) || numericAmount < 1) {
+      return res.status(400).json({ message: 'A valid payment amount is required' });
+    }
+    if (orderData && Math.abs(Number(orderData.total) - numericAmount) > 0.01) {
+      return res.status(400).json({ message: 'Order total does not match payment amount' });
+    }
 
     const options = {
-      amount: Math.round(amount * 100), // Razorpay expects paise
+      amount: Math.round(numericAmount * 100), // Razorpay expects paise
       currency,
       receipt: receipt || `receipt_${Date.now()}`,
+      notes: { source: 'brindarani-web', userId: String(req.user._id) },
     };
 
     const { client: razorpay, keyId } = await getRazorpayClient();
@@ -103,6 +112,9 @@ router.post('/verify', authenticate, async (req, res) => {
 
     // Confirm the pending application order (idempotent with webhook processing)
     let order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
+    if (order && String(order.userId) !== String(req.user._id)) {
+      return res.status(403).json({ message: 'Payment order does not belong to this user' });
+    }
     if (!order) {
       order = new Order({ ...orderData, userId: req.user._id, userName: req.user.name, orderCode: await generateOrderCode(), customerEmail: orderData.customerEmail || req.user.email, customerPhone: orderData.customerPhone || req.user.phone || '', paymentMethod: 'RAZORPAY', razorpayOrderId: razorpay_order_id });
     }

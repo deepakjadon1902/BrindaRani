@@ -104,7 +104,7 @@ const CheckoutPage = () => {
     }
 
     try {
-      const { orderId, amount, currency, key } = await paymentAPI.createOrder(total, orderData);
+      const { orderId, amount, currency, key, orderCode } = await paymentAPI.createOrder(total, orderData);
 
       const options = {
         key,
@@ -112,6 +112,7 @@ const CheckoutPage = () => {
         currency,
         name: appSettings.appName || 'Brindarani',
         description: `Order of ${orderItems.length} item${orderItems.length === 1 ? '' : 's'}`,
+        image: appSettings.logoUrl || undefined,
         order_id: orderId,
         handler: async (response: any) => {
           try {
@@ -158,8 +159,15 @@ const CheckoutPage = () => {
         },
         theme: {
           color: '#8B4513',
+          backdrop_color: '#21160f',
         },
+        notes: { orderCode: orderCode || '', source: 'Brindarani' },
+        retry: { enabled: true },
+        config: { display: { language: 'en' } },
         modal: {
+          confirm_close: true,
+          escape: true,
+          animation: true,
           ondismiss: () => {
             try {
               void ordersAPI.sendPaymentFailed({
