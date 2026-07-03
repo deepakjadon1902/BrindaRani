@@ -9,7 +9,8 @@ import {
   X,
   Palette,
   PackageSearch,
-  Boxes
+  Boxes,
+  Package
 } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { Button } from '@/components/ui/button';
@@ -120,6 +121,7 @@ const UserLayout = () => {
               <Link to="/track-order" className="flex items-center gap-1.5 text-sm text-foreground/80 hover:text-primary transition-colors font-medium whitespace-nowrap">
                 <PackageSearch size={18} aria-hidden="true" /> Track Orders
               </Link>
+              {auth.isAuthenticated && <Link to="/my-orders" className="flex items-center gap-1.5 text-sm text-foreground/80 hover:text-primary transition-colors font-medium whitespace-nowrap"><Package size={18} aria-hidden="true"/> My Orders</Link>}
             </nav>
 
             {/* Right Actions */}
@@ -180,6 +182,9 @@ const UserLayout = () => {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link to="/profile">My Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/my-orders">My Orders</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/wishlist">Wishlist</Link>
@@ -255,6 +260,7 @@ const UserLayout = () => {
               >
                 Track Order
               </Link>
+              {auth.isAuthenticated && <Link to="/my-orders" className="py-2 text-foreground/80 hover:text-primary" onClick={() => setMobileMenuOpen(false)}>My Orders</Link>}
               {!auth.isAuthenticated && (
                 <>
                   <div className="border-t border-border my-2" />

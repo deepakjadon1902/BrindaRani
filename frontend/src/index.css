@@ -157,7 +157,7 @@
   }
 
   .card-product {
-    @apply card-premium hover:scale-[1.02] hover:border-primary/30
+    @apply card-premium hover:-translate-y-1 hover:border-primary/30
            cursor-pointer overflow-hidden;
   }
 

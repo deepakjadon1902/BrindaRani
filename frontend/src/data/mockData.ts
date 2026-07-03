@@ -63,10 +63,20 @@ export interface Order {
     price: number;
   }[];
   total: number;
-  status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'paid' | 'confirmed' | 'processing' | 'packed' | 'shipped' | 'out_for_delivery' | 'delivered' | 'cancelled' | 'returned';
   paymentStatus?: 'pending' | 'paid' | 'failed';
   paymentMethod: string;
   address: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  courierPartner?: string;
+  trackingId?: string;
+  trackingUrl?: string;
+  estimatedDelivery?: string;
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  paymentDetails?: Record<string, unknown>;
+  statusHistory?: { status: string; note?: string; location?: string; timestamp: string }[];
   createdAt: string;
 }
 

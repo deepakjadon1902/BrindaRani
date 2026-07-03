@@ -28,6 +28,7 @@ import NotFound from "./pages/NotFound";
 import CustomDesignPage from "./pages/CustomDesignPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import GoogleCallbackPage from "./pages/GoogleCallbackPage";
+import MyOrdersPage from "./pages/MyOrdersPage";
 
 // Admin Pages
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
@@ -38,6 +39,8 @@ import AdminOrders from "./pages/admin/AdminOrders";
 import AdminPayments from "./pages/admin/AdminPayments";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminShipments from "./pages/admin/AdminShipments";
+import AdminHeroSlides from "./pages/admin/AdminHeroSlides";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +73,7 @@ const App = () => (
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="my-orders" element={<MyOrdersPage />} />
             <Route path="about" element={<AboutPage />} />
             <Route path="contact" element={<ContactPage />} />
             <Route path="custom-design" element={<CustomDesignPage />} />
@@ -87,6 +91,8 @@ const App = () => (
             <Route path="categories" element={<AdminCategories />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="payments" element={<AdminPayments />} />
+            <Route path="shipments" element={<AdminShipments />} />
+            <Route path="hero-slides" element={<AdminHeroSlides />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>

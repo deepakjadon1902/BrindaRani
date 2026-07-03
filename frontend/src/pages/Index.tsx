@@ -180,7 +180,7 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
             {trendingProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -235,7 +235,7 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
             {latestProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -261,7 +261,7 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
             {newArrivalProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -287,7 +287,7 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
             {vrindavanSpecials.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -338,7 +338,7 @@ const Index = () => {
               </div>
               <h4 className="font-serif font-bold text-foreground mb-2">Secure Payment</h4>
               <p className="text-sm text-muted-foreground">
-                100% secure checkout with UPI, cards, net banking & cash on delivery
+                100% secure checkout with UPI, cards,  and net banking 
               </p>
             </div>
           </div>

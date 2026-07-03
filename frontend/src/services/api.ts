@@ -19,7 +19,12 @@ export const setToken = (token: string | null) => {
   }
 };
 
-export const getToken = () => authToken;
+export const getToken = () => {
+  // Keep long-lived and multi-tab sessions in sync. Another tab may refresh,
+  // replace or clear the token after this module was first evaluated.
+  authToken = localStorage.getItem('Brindarani-token');
+  return authToken;
+};
 export const resolveAssetUrl = (url?: string) => {
   if (!url) return '';
   const trimmed = String(url).trim();
@@ -27,6 +32,23 @@ export const resolveAssetUrl = (url?: string) => {
   if (trimmed.startsWith('data:')) return trimmed;
 
   const normalizedSlashes = trimmed.replace(/\\/g, '/');
+
+  // ImageKit delivery optimization: consistently request WebP with automatic quality.
+  if (normalizedSlashes.startsWith('https://ik.imagekit.io/')) {
+    try {
+      const parsed = new URL(normalizedSlashes);
+      if (!parsed.pathname.includes('/tr:')) {
+        const segments = parsed.pathname.split('/').filter(Boolean);
+        if (segments.length >= 2) {
+          segments.splice(1, 0, 'tr:f-webp,q-auto');
+          parsed.pathname = `/${segments.join('/')}`;
+        }
+      }
+      return parsed.toString();
+    } catch {
+      return normalizedSlashes;
+    }
+  }
 
   // If the DB contains an absolute URL to a previous environment (e.g. localhost),
   // but the path is "/uploads/...", rewrite it to the current API origin.
@@ -59,8 +81,9 @@ const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
     ...((options.headers as Record<string, string>) || {}),
   };
 
-  if (authToken) {
-    headers['Authorization'] = `Bearer ${authToken}`;
+  const currentToken = getToken();
+  if (currentToken) {
+    headers['Authorization'] = `Bearer ${currentToken}`;
   }
 
   // Don't set Content-Type for FormData
@@ -156,6 +179,9 @@ export const ordersAPI = {
   updateStatus: (id: string, status: string) =>
     apiFetch(`/orders/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) }),
 
+  updateShipment: (id: string, data: Record<string, any>) =>
+    apiFetch(`/orders/${id}/shipment`, { method: 'PUT', body: JSON.stringify(data) }),
+
   track: (code: string) => apiFetch(`/orders/track/${code}`),
 
   sendPaymentFailed: (data: {
@@ -167,10 +193,19 @@ export const ordersAPI = {
   }) => apiFetch('/orders/payment-failed', { method: 'POST', body: JSON.stringify(data) }),
 };
 
+// ========== HERO SLIDES API ==========
+export const heroSlidesAPI = {
+  getPublic: () => apiFetch(`/hero-slides?refresh=${Date.now()}`, { cache: 'no-store' }),
+  getAdmin: () => apiFetch('/hero-slides/admin'),
+  create: (data: Record<string, any>) => apiFetch('/hero-slides', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: Record<string, any>) => apiFetch(`/hero-slides/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: string) => apiFetch(`/hero-slides/${id}`, { method: 'DELETE' }),
+};
+
 // ========== PAYMENT API (Razorpay) ==========
 export const paymentAPI = {
-  createOrder: (amount: number) =>
-    apiFetch('/payment/create-order', { method: 'POST', body: JSON.stringify({ amount }) }),
+  createOrder: (amount: number, orderData?: any) =>
+    apiFetch('/payment/create-order', { method: 'POST', body: JSON.stringify({ amount, orderData }) }),
 
   verifyPayment: (data: {
     razorpay_order_id: string;

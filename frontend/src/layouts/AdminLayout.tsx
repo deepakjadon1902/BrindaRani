@@ -11,7 +11,9 @@ import {
   LogOut,
   Menu,
   X,
-  ChevronLeft
+  ChevronLeft,
+  Truck,
+  Images
 } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { cn } from '@/lib/utils';
@@ -24,6 +26,8 @@ const menuItems = [
   { icon: FolderTree, label: 'Categories', path: '/admin/categories' },
   { icon: ShoppingBag, label: 'Orders', path: '/admin/orders' },
   { icon: CreditCard, label: 'Payments', path: '/admin/payments' },
+  { icon: Truck, label: 'Shipments', path: '/admin/shipments' },
+  { icon: Images, label: 'Hero Slides', path: '/admin/hero-slides' },
   { icon: Users, label: 'Users', path: '/admin/users' },
   { icon: SettingsIcon, label: 'Settings', path: '/admin/settings' },
 ];

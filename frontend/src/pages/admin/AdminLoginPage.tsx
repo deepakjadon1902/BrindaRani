@@ -28,8 +28,14 @@ const AdminLoginPage = () => {
       } else {
         toast.error('Invalid admin credentials');
       }
-    } catch (error: any) {
-      toast.error('Login failed', { description: error.message });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Unable to sign in';
+      const databaseUnavailable = message.toLowerCase().includes('database');
+      toast.error(databaseUnavailable ? 'Service temporarily unavailable' : 'Login failed', {
+        description: databaseUnavailable
+          ? 'The server cannot reach the database. Please try again shortly.'
+          : message,
+      });
     }
     setIsLoading(false);
   };

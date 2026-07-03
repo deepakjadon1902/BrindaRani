@@ -2,11 +2,11 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const { authenticate, adminOnly } = require('../middleware/auth');
-const { hasCloudinaryConfig, uploadImageBuffer } = require('../utils/cloudinary');
+const { hasImageKitConfig, uploadImageBuffer } = require('../utils/imagekit');
 
 const router = express.Router();
 
-const useCloudinary = hasCloudinaryConfig();
+const useImageKit = hasImageKitConfig();
 const allowedFolders = new Set(['categories', 'products', 'profiles', 'site', 'misc']);
 const getRequestedFolder = (req, fallback) => {
   const raw = String(req.query.folder || '').trim().toLowerCase();
@@ -14,8 +14,8 @@ const getRequestedFolder = (req, fallback) => {
   return fallback;
 };
 
-// Configure multer storage (Cloudinary -> memory, fallback -> disk)
-const storage = useCloudinary
+// ImageKit uploads use memory; local disk remains a development fallback.
+const storage = useImageKit
   ? multer.memoryStorage()
   : multer.diskStorage({
       destination: (req, file, cb) => {
@@ -31,9 +31,9 @@ const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, cb) => {
-    const allowed = /jpeg|jpg|png|webp|gif|ico/;
+    const allowed = /jpeg|jpg|png|webp|gif|avif|heic|heif|tif|tiff|bmp|ico/;
     const ext = allowed.test(path.extname(file.originalname).toLowerCase());
-    const mime = allowed.test(file.mimetype);
+    const mime = file.mimetype.startsWith('image/');
     if (ext && mime) return cb(null, true);
     cb(new Error('Only image files are allowed'));
   },
@@ -43,11 +43,11 @@ const upload = multer({
 router.post('/', authenticate, adminOnly, upload.array('images', 10), async (req, res) => {
   try {
     const folder = getRequestedFolder(req, 'misc');
-    const urls = useCloudinary
+    const urls = useImageKit
       ? await Promise.all(
           req.files.map(async (file) => {
-            const result = await uploadImageBuffer(file.buffer, { folder });
-            return result.secure_url;
+            const result = await uploadImageBuffer(file.buffer, { folder, fileName: file.originalname });
+            return result.url;
           })
         )
       : req.files.map((file) => `/uploads/${file.filename}`);
@@ -64,8 +64,8 @@ router.post('/profile', authenticate, upload.single('image'), async (req, res) =
       return res.status(400).json({ message: 'No image file uploaded' });
     }
 
-    const url = useCloudinary
-      ? (await uploadImageBuffer(req.file.buffer, { folder: 'profiles' })).secure_url
+    const url = useImageKit
+      ? (await uploadImageBuffer(req.file.buffer, { folder: 'profiles', fileName: req.file.originalname })).url
       : `/uploads/${req.file.filename}`;
     res.json({ url });
   } catch (error) {
@@ -80,8 +80,8 @@ router.post('/favicon', authenticate, adminOnly, upload.single('image'), async (
       return res.status(400).json({ message: 'No image file uploaded' });
     }
 
-    const url = useCloudinary
-      ? (await uploadImageBuffer(req.file.buffer, { folder: 'site' })).secure_url
+    const url = useImageKit
+      ? (await uploadImageBuffer(req.file.buffer, { folder: 'site', fileName: req.file.originalname })).url
       : `/uploads/${req.file.filename}`;
     res.json({ url });
   } catch (error) {

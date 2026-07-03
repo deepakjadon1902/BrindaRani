@@ -1,97 +1,25 @@
 import { useEffect } from 'react';
+import { CheckCircle2, Clock3, XCircle } from 'lucide-react';
 import { useStore } from '@/store/useStore';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
-import type { Order } from '@/data/mockData';
+import { Badge } from '@/components/ui/badge';
 
 const AdminPayments = () => {
-  const { orders, fetchOrders, updateOrderStatus } = useStore();
+  const { orders, fetchOrders } = useStore();
+  useEffect(() => { fetchOrders(); }, [fetchOrders]);
+  const paid = orders.filter((o) => o.paymentStatus === 'paid').length;
+  const failed = orders.filter((o) => o.paymentStatus === 'failed').length;
+  const pending = orders.length - paid - failed;
 
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
-
-  const handleStatusChange = async (orderId: string, status: Order['status']) => {
-    try {
-      await updateOrderStatus(orderId, status);
-      toast.success('Payment status updated');
-    } catch {
-      toast.error('Failed to update payment status');
-    }
-  };
-
-  const pendingPayments = orders.filter((order) => order.status === 'pending' || order.status === 'paid');
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Payments</h1>
-        <p className="text-sm text-muted-foreground">Verify and update payment/order status</p>
-      </div>
-
-      <div className="admin-card overflow-x-auto">
-        <table className="table-premium">
-          <thead>
-            <tr>
-              <th>Order</th>
-              <th>Customer</th>
-              <th>Amount</th>
-              <th>Method</th>
-              <th>Current Status</th>
-              <th>Update</th>
-              <th>Quick Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pendingPayments.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="text-center py-8 text-muted-foreground">No payment records found</td>
-              </tr>
-            ) : (
-              pendingPayments.map((order) => (
-                <tr key={order.id}>
-                  <td className="font-medium">{order.id?.slice(-8)}</td>
-                  <td>{order.userName}</td>
-                  <td>Rs {order.total.toLocaleString()}</td>
-                  <td>{order.paymentMethod || 'N/A'}</td>
-                  <td>
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      order.status === 'paid' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
-                    }`}>
-                      {order.status}
-                    </span>
-                  </td>
-                  <td>
-                    <Select value={order.status} onValueChange={(value) => handleStatusChange(order.id, value as Order['status'])}>
-                      <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="paid">Paid</SelectItem>
-                        <SelectItem value="shipped">Shipped</SelectItem>
-                        <SelectItem value="delivered">Delivered</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </td>
-                  <td>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleStatusChange(order.id, 'paid')}
-                      disabled={order.status === 'paid'}
-                    >
-                      Mark as Paid
-                    </Button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+  return <div className="space-y-6">
+    <div><h1 className="text-2xl font-bold">Payment status</h1><p className="text-sm text-muted-foreground">Read-only payment ledger verified by Razorpay signatures and webhooks</p></div>
+    <div className="grid gap-4 md:grid-cols-3">
+      <div className="admin-card p-5 flex items-center gap-3"><CheckCircle2 className="text-emerald-600"/><div><p className="text-2xl font-bold">{paid}</p><p className="text-sm text-muted-foreground">Successful</p></div></div>
+      <div className="admin-card p-5 flex items-center gap-3"><Clock3 className="text-amber-600"/><div><p className="text-2xl font-bold">{pending}</p><p className="text-sm text-muted-foreground">Pending</p></div></div>
+      <div className="admin-card p-5 flex items-center gap-3"><XCircle className="text-red-600"/><div><p className="text-2xl font-bold">{failed}</p><p className="text-sm text-muted-foreground">Failed</p></div></div>
     </div>
-  );
+    <div className="admin-card overflow-x-auto"><table className="table-premium"><thead><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Method</th><th>Gateway order</th><th>Gateway payment</th><th>Status</th><th>Updated</th></tr></thead>
+      <tbody>{orders.length === 0 ? <tr><td colSpan={8} className="py-10 text-center text-muted-foreground">No payment records</td></tr> : orders.map((order) => <tr key={order.id}><td className="font-semibold">#{order.orderCode || order.id.slice(-8)}</td><td>{order.userName}</td><td>₹{order.total.toLocaleString('en-IN')}</td><td>{order.paymentMethod}</td><td className="font-mono text-xs">{order.razorpayOrderId || '—'}</td><td className="font-mono text-xs">{order.razorpayPaymentId || '—'}</td><td><Badge variant={order.paymentStatus === 'paid' ? 'default' : order.paymentStatus === 'failed' ? 'destructive' : 'secondary'}>{order.paymentStatus || 'pending'}</Badge></td><td className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleString('en-IN')}</td></tr>)}</tbody>
+    </table></div>
+  </div>;
 };
-
 export default AdminPayments;

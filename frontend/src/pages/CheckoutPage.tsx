@@ -104,7 +104,7 @@ const CheckoutPage = () => {
     }
 
     try {
-      const { orderId, amount, currency, key } = await paymentAPI.createOrder(total);
+      const { orderId, amount, currency, key } = await paymentAPI.createOrder(total, orderData);
 
       const options = {
         key,
@@ -280,9 +280,10 @@ const CheckoutPage = () => {
               </Link>
             </div>
           )}
-          <Button onClick={() => navigate('/')} className="btn-sacred">
-            Continue Shopping
-          </Button>
+          <div className="flex flex-col justify-center gap-3 sm:flex-row">
+            <Button onClick={() => navigate('/my-orders')} className="btn-sacred">View My Orders</Button>
+            <Button onClick={() => navigate('/')} variant="outline">Continue Shopping</Button>
+          </div>
         </div>
       </div>
     );

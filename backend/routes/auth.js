@@ -120,44 +120,48 @@ router.post('/login', async (req, res) => {
 // POST /api/auth/admin-login
 router.post('/admin-login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = String(req.body.password || '');
+    if (!email || !password) return res.status(400).json({ message: 'Email and password are required' });
 
-    const settings = await Settings.findOne();
-    const settingsEmail = settings?.adminEmail?.trim();
-    const settingsHash = settings?.adminPasswordHash || '';
-
-    if (settingsEmail && settingsHash) {
-      const isMatch = settingsEmail === email && await bcrypt.compare(password, settingsHash);
-      if (isMatch) {
-        let admin = await User.findOne({ email: settingsEmail, isAdmin: true });
-        if (!admin) {
-          admin = await User.create({
-            name: 'Admin',
-            email: settingsEmail,
-            password,
-            isAdmin: true,
-            isEmailVerified: true,
-            avatar: '',
-          });
-        }
-        const token = generateToken(admin);
-        return res.json({ user: admin, token });
-      }
-    }
-
-    if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-      let admin = await User.findOne({ email, isAdmin: true });
-      
+    const ensureAdminUser = async (adminEmail) => {
+      let admin = await User.findOne({ email: adminEmail });
+      if (admin?.isBlocked) return null;
       if (!admin) {
         admin = await User.create({
           name: 'Admin',
-          email,
+          email: adminEmail,
           password,
           isAdmin: true,
           isEmailVerified: true,
           avatar: '',
         });
+      } else if (!admin.isAdmin || !admin.isEmailVerified) {
+        admin.isAdmin = true;
+        admin.isEmailVerified = true;
+        await admin.save();
       }
+      return admin;
+    };
+
+    const settings = await Settings.findOne();
+    const settingsEmail = settings?.adminEmail?.trim().toLowerCase();
+    const settingsHash = settings?.adminPasswordHash || '';
+
+    if (settingsEmail && settingsHash) {
+      const isMatch = settingsEmail === email && await bcrypt.compare(password, settingsHash);
+      if (isMatch) {
+        const admin = await ensureAdminUser(settingsEmail);
+        if (!admin) return res.status(403).json({ message: 'Admin account is blocked' });
+        const token = generateToken(admin);
+        return res.json({ user: admin, token });
+      }
+    }
+
+    const envAdminEmail = String(process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+    if (email === envAdminEmail && password === process.env.ADMIN_PASSWORD) {
+      const admin = await ensureAdminUser(email);
+      if (!admin) return res.status(403).json({ message: 'Admin account is blocked' });
 
       const token = generateToken(admin);
       return res.json({ user: admin, token });
@@ -165,6 +169,7 @@ router.post('/admin-login', async (req, res) => {
 
     return res.status(401).json({ message: 'Invalid admin credentials' });
   } catch (error) {
+    console.error('Admin login error:', error.message);
     res.status(500).json({ message: error.message });
   }
 });

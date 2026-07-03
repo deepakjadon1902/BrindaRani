@@ -1,12 +1,37 @@
 const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.SMTP_EMAIL,
-    pass: process.env.SMTP_PASSWORD, // Gmail App Password (not regular password)
-  },
-});
+let smtpTransporter;
+
+const getSmtpTransporter = () => {
+  if (!smtpTransporter) {
+    smtpTransporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user: process.env.SMTP_EMAIL, pass: process.env.SMTP_PASSWORD },
+    });
+  }
+  return smtpTransporter;
+};
+
+const sendEmail = async ({ to, subject, html }) => {
+  if (!to) return null;
+  if (process.env.RESEND_API_KEY) {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: `Brindarani <${process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'}>`,
+        to: [to], subject, html,
+        ...(process.env.RESEND_REPLY_TO ? { reply_to: process.env.RESEND_REPLY_TO } : {}),
+      }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.message || `Resend request failed (${response.status})`);
+    console.log('Email sent with Resend:', { id: result.id, subject });
+    return result;
+  }
+  if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) throw new Error('Email provider is not configured');
+  return getSmtpTransporter().sendMail({ from: `"Brindarani" <${process.env.SMTP_EMAIL}>`, to, subject, html });
+};
 
 /**
  * Send email verification link
@@ -78,7 +103,7 @@ const sendVerificationEmail = async (email, token, baseUrl) => {
     `,
   };
 
-  await transporter.sendMail(mailOptions);
+  await sendEmail(mailOptions);
 };
 
 const sendOrderPlacedEmail = async (order) => {
@@ -111,7 +136,7 @@ const sendOrderPlacedEmail = async (order) => {
       </div>
     `,
   };
-  await transporter.sendMail(mailOptions);
+  await sendEmail(mailOptions);
 };
 
 const sendPaymentFailedEmail = async (payload) => {
@@ -139,8 +164,30 @@ const sendPaymentFailedEmail = async (payload) => {
       </div>
     `,
   };
-  await transporter.sendMail(mailOptions);
+  await sendEmail(mailOptions);
 };
 
-module.exports = { sendVerificationEmail, sendOrderPlacedEmail, sendPaymentFailedEmail };
+const sendOrderStatusEmail = async (order) => {
+  if (!order?.customerEmail) return;
+  const tracking = order.trackingId ? `
+    <p><strong>Courier:</strong> ${order.courierPartner || 'Courier partner'}</p>
+    <p><strong>Tracking ID:</strong> ${order.trackingId}</p>
+    ${order.trackingUrl ? `<p><a href="${order.trackingUrl}" style="color:#8B4513">Track your shipment</a></p>` : ''}
+  ` : '';
+  await sendEmail({
+    from: `"Brindarani" <${process.env.SMTP_EMAIL}>`,
+    to: order.customerEmail,
+    subject: `Order #${order.orderCode} update: ${String(order.status).replaceAll('_', ' ')}`,
+    html: `<div style="font-family:Georgia,serif;max-width:600px;margin:auto;padding:32px 20px">
+      <h1 style="color:#8B4513;text-align:center">Brindarani</h1>
+      <div style="background:#FFF8F0;border-radius:12px;padding:24px">
+        <h2>Your order is ${String(order.status).replaceAll('_', ' ')}</h2>
+        <p>Hi ${order.userName || 'there'}, order <strong>#${order.orderCode}</strong> has a new update.</p>
+        ${tracking}
+        ${order.estimatedDelivery ? `<p><strong>Estimated delivery:</strong> ${new Date(order.estimatedDelivery).toLocaleDateString('en-IN')}</p>` : ''}
+      </div></div>`,
+  });
+};
+
+module.exports = { sendVerificationEmail, sendOrderPlacedEmail, sendPaymentFailedEmail, sendOrderStatusEmail, sendEmail };
 

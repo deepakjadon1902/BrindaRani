@@ -279,6 +279,13 @@ const ProfilePage = () => {
                       <div className="text-sm text-muted-foreground mb-2">
                         {order.items.map((item) => item.productName).join(', ')}
                       </div>
+                      <div className="mb-3 grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                        <span>Payment: <strong className="text-foreground">{order.paymentStatus || 'pending'}</strong></span>
+                        <span>Method: <strong className="text-foreground">{order.paymentMethod}</strong></span>
+                        {order.courierPartner && <span>Courier: <strong className="text-foreground">{order.courierPartner}</strong></span>}
+                        {order.trackingId && <span>Tracking ID: <strong className="text-foreground">{order.trackingId}</strong></span>}
+                      </div>
+                      {!!order.statusHistory?.length && <div className="mb-3 flex flex-wrap gap-1.5">{order.statusHistory.map((entry, index) => <span key={`${entry.timestamp}-${index}`} className="rounded-full bg-muted px-2 py-1 text-[11px]">{entry.status.replaceAll('_', ' ')}</span>)}</div>}
                       <div className="flex items-center justify-between">
                         <p className="font-semibold">Rs {order.total.toLocaleString()}</p>
                         {order.orderCode && (
