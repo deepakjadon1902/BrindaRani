@@ -19,10 +19,10 @@ const CategoryNavBar = () => {
 
   const closeDrawer = () => { setDrawerOpen(false); setDrawerCategoryId(null); };
 
-  return <nav className="sticky top-20 z-40 border-y border-border bg-card/95 text-foreground shadow-sm backdrop-blur md:top-24" aria-label="Product categories" onMouseLeave={() => setOpenCategoryId(null)}>
-    <div className="container mx-auto flex h-11 items-stretch px-2 sm:px-4">
+  return <nav className="sticky top-[116px] z-40 border-y border-border bg-card/95 text-foreground shadow-sm backdrop-blur md:top-24" aria-label="Product categories" onMouseLeave={() => setOpenCategoryId(null)}>
+    <div className="container mx-auto flex h-11 items-center px-2 sm:px-4 md:items-stretch">
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <SheetTrigger asChild><button type="button" className="flex shrink-0 items-center gap-2 border-x border-primary/10 bg-primary px-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4"><Menu size={20}/>All</button></SheetTrigger>
+        <SheetTrigger asChild><button type="button" className="flex h-9 shrink-0 items-center gap-2 rounded-md bg-primary px-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90 md:h-auto md:rounded-none md:border-x md:border-primary/10 sm:px-4"><Menu size={19}/>All</button></SheetTrigger>
         <SheetContent side="left" className="w-[88vw] max-w-sm overflow-y-auto p-0 sm:max-w-sm">
           <SheetHeader className="bg-sidebar px-5 py-5 text-left text-sidebar-foreground"><SheetTitle className="flex items-center gap-3 text-lg text-sidebar-foreground"><UserCircle size={27}/>{auth.isAuthenticated ? `Hello, ${auth.user?.name?.split(' ')[0] || 'Devotee'}` : 'Hello, Sign in'}</SheetTitle></SheetHeader>
           <div className="divide-y">
@@ -33,16 +33,15 @@ const CategoryNavBar = () => {
         </SheetContent>
       </Sheet>
 
-      <div className="flex min-w-0 flex-1 items-stretch overflow-x-auto scrollbar-hide">
+      <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto px-2 scrollbar-hide md:items-stretch md:gap-0 md:overflow-visible md:px-0">
         {sortedCategories.map((category) => {
           const open = openCategoryId === category.id && category.subcategories.length > 0;
-          return <div key={category.id} className="shrink-0" onMouseEnter={() => setOpenCategoryId(category.id)}>
-            <Link to={`/category/${encodeURIComponent(category.name)}`} className={`flex h-full items-center whitespace-nowrap border-r border-border/60 px-3 text-[13px] font-semibold transition-colors hover:bg-primary/5 hover:text-primary lg:px-4 ${open ? 'bg-primary/5 text-primary' : 'text-foreground/80'}`}>{category.name}{category.subcategories.length > 0 && <ChevronDown size={12} className="ml-1.5"/>}</Link>
+          return <div key={category.id} className="shrink-0 md:min-w-0 md:flex-1" onMouseEnter={() => setOpenCategoryId(category.id)}>
+            <Link to={`/category/${encodeURIComponent(category.name)}`} className={`flex h-8 items-center justify-center whitespace-nowrap rounded-full border border-border/70 bg-background px-3 text-[12px] font-semibold transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary md:h-full md:w-full md:rounded-none md:border-0 md:border-r md:border-border/60 md:bg-transparent md:px-2 md:text-center md:text-[13px] lg:px-3 ${open ? 'border-primary/40 bg-primary/5 text-primary' : 'text-foreground/80'}`}><span className="truncate">{category.name}</span>{category.subcategories.length > 0 && <ChevronDown size={12} className="ml-1.5 shrink-0"/>}</Link>
             {open && <div className="absolute left-0 right-0 top-full border-t border-border bg-card text-foreground shadow-xl"><div className="container mx-auto px-5 py-5"><div className="mb-3 flex items-center justify-between"><h3 className="font-serif text-lg font-bold">Explore {category.name}</h3><Link to={`/category/${encodeURIComponent(category.name)}`} className="text-xs font-semibold text-primary hover:underline">View all</Link></div><div className="flex flex-wrap gap-2">{category.subcategories.map((subcategory) => <Link key={subcategory} to={`/category/${encodeURIComponent(category.name)}?subcategory=${encodeURIComponent(subcategory)}`} onClick={() => setOpenCategoryId(null)} className="rounded-full border bg-background px-4 py-2 text-sm font-medium hover:border-primary hover:bg-primary/5 hover:text-primary">{subcategory}</Link>)}</div></div></div>}
           </div>;
         })}
       </div>
-      <Link to="/products?filter=latest" className="hidden shrink-0 items-center border-l border-border px-4 text-xs font-bold text-primary hover:bg-primary/5 lg:flex">Today&apos;s Sacred Picks</Link>
     </div>
   </nav>;
 };

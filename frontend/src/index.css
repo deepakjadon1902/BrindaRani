@@ -69,13 +69,13 @@
     --shadow-glow: 0 0 24px hsl(35 85% 55% / 0.25);
 
     /* Admin Sidebar */
-    --sidebar-background: 25 30% 12%;
-    --sidebar-foreground: 45 40% 95%;
+    --sidebar-background: 0 2% 13%;
+    --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 35 85% 55%;
-    --sidebar-primary-foreground: 25 30% 12%;
-    --sidebar-accent: 25 25% 20%;
-    --sidebar-accent-foreground: 45 40% 95%;
-    --sidebar-border: 25 20% 25%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 312 4% 54%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 312 4% 54%;
     --sidebar-ring: 35 85% 55%;
   }
 
@@ -214,31 +214,67 @@
 
   /* Admin Styles */
   .admin-card {
-    @apply bg-card rounded-xl border border-border p-6 
-           shadow-[var(--shadow-soft)];
+    @apply rounded-2xl border border-[#90878E]/25 bg-[#212020] p-6 text-white
+           shadow-[0_24px_70px_-45px_rgba(255,255,255,0.35)];
+  }
+
+  .admin-card .text-muted-foreground {
+    color: rgb(255 255 255 / 0.62);
+  }
+
+  .admin-card input,
+  .admin-card textarea,
+  .admin-card button[role="combobox"] {
+    border-color: rgb(144 135 142 / 0.35);
+    background-color: rgb(255 255 255 / 0.96);
+    color: #000000;
+  }
+
+  .admin-card input::placeholder,
+  .admin-card textarea::placeholder {
+    color: rgb(0 0 0 / 0.55);
+  }
+
+  .admin-card input::file-selector-button {
+    color: #000000;
+  }
+
+  .admin-card label {
+    color: rgb(255 255 255 / 0.86);
+  }
+
+  .admin-card .bg-white {
+    color: #000000;
   }
 
   .admin-stat-card {
-    @apply admin-card hover:shadow-[var(--shadow-medium)] 
-           transition-all duration-300 cursor-pointer;
+    @apply admin-card transition-all duration-300 cursor-pointer hover:border-white/35 hover:bg-[#2a2929];
   }
 
   /* Table Styles */
   .table-premium {
-    @apply w-full border-collapse;
+    @apply w-full border-collapse text-[15px];
   }
 
   .table-premium th {
-    @apply text-left text-sm font-medium text-muted-foreground 
-           uppercase tracking-wider py-3 px-4 border-b border-border;
+    @apply text-left text-[13px] font-semibold uppercase tracking-wider py-4 px-5;
+    color: rgb(255 255 255 / 0.68);
+    background-color: #262525;
+    border-bottom: 1px solid rgb(144 135 142 / 0.18);
   }
 
   .table-premium td {
-    @apply py-4 px-4 border-b border-border/50;
+    @apply py-4 px-5;
+    color: #ffffff;
+    border-bottom: 1px solid rgb(144 135 142 / 0.12);
+  }
+
+  .table-premium tbody tr:nth-child(even) {
+    background-color: #2a2929;
   }
 
   .table-premium tr:hover {
-    @apply bg-muted/30;
+    background-color: rgb(144 135 142 / 0.14);
   }
 
   /* Skeleton Loading */

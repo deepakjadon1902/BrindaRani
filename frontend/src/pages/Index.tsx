@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Truck, ShieldCheck, RotateCcw, Lock, Sparkles, Tag, Percent, Gift, Clock } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import HeroSection from '@/components/user/HeroSection';
-import CategoryIconBar from '@/components/user/CategoryIconBar';
 import ProductCard from '@/components/user/ProductCard';
 import { Button } from '@/components/ui/button';
 
@@ -28,9 +27,6 @@ const Index = () => {
     <div>
       {/* Hero Section */}
       <HeroSection />
-
-      {/* Categories Icon Bar - Below Hero */}
-      <CategoryIconBar />
 
       {/* Brand Story / Who We Are */}
       <section className="py-14 md:py-20 bg-gradient-to-b from-background to-muted/30">
@@ -180,7 +176,7 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
             {trendingProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -235,7 +231,7 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
             {latestProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -261,7 +257,7 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
             {newArrivalProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -287,7 +283,7 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
             {vrindavanSpecials.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

@@ -28,7 +28,6 @@ import Footer from '@/components/user/Footer';
 
 const UserLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const navigate = useNavigate();
   
   const { 
@@ -72,7 +71,7 @@ const UserLayout = () => {
       {/* Navbar */}
       <header className="navbar-glass">
         <div className="container mx-auto px-3 sm:px-4">
-          <div className="flex items-center gap-3 lg:gap-6 h-20 md:h-24">
+          <div className="flex h-16 items-center gap-2 md:h-24 lg:gap-6">
             {/* Left: Mobile Menu + Logo */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               <button
@@ -88,7 +87,7 @@ const UserLayout = () => {
                   <img
                     src={appSettings.logoUrl}
                     alt={`${appSettings.appName} logo`}
-                    className="h-14 w-14 md:h-16 md:w-16 rounded-full object-cover border border-border shadow-sm"
+                    className="h-14 w-14 rounded-full border border-border object-cover shadow-sm sm:h-16 sm:w-16 md:h-20 md:w-20"
                   />
                 ) : null}
               </Link>
@@ -125,15 +124,7 @@ const UserLayout = () => {
             </nav>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-2 md:gap-4">
-              {/* Mobile Search Toggle */}
-              <button
-                className="lg:hidden p-2"
-                onClick={() => setSearchOpen(!searchOpen)}
-              >
-                <Search size={22} />
-              </button>
-
+            <div className="ml-auto flex items-center gap-1.5 md:gap-4">
               {/* Wishlist */}
               <Link to="/wishlist" className="p-2 relative group" aria-label={`Wishlist, ${wishlistCount} items`} title="Wishlist">
                 <Heart 
@@ -202,37 +193,39 @@ const UserLayout = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate('/login')}
-                  className="hidden sm:flex"
-                >
-                  Login
-                </Button>
+                <>
+                  <button className="p-2 sm:hidden" onClick={() => navigate('/login')} aria-label="Login" title="Login">
+                    <User size={22} className="text-foreground/80" />
+                  </button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => navigate('/login')}
+                    className="hidden sm:flex"
+                  >
+                    Login
+                  </Button>
+                </>
               )}
             </div>
           </div>
 
           {/* Mobile Search Bar */}
-          {searchOpen && (
-            <form 
-              onSubmit={handleSearch}
-              className="lg:hidden pb-4 animate-fade-in"
-            >
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-                <Input
-                  type="text"
-                  placeholder="Search for divine products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 input-sacred"
-                  autoFocus
-                />
-              </div>
-            </form>
-          )}
+          <form 
+            onSubmit={handleSearch}
+            className="pb-3 lg:hidden"
+          >
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+              <Input
+                type="text"
+                placeholder="Search for divine products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-10 rounded-md bg-card pl-10 shadow-sm"
+              />
+            </div>
+          </form>
         </div>
 
         {/* Mobile Menu */}

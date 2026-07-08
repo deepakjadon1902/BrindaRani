@@ -189,8 +189,8 @@ const AdminSettings = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">Manage application branding, payment, notifications, and admin access.</p>
+        <h1 className="font-bold">Settings</h1>
+        <p className="mt-1 text-base text-white/62">Manage application branding, payment, notifications, and admin access.</p>
       </div>
 
       <form onSubmit={handleSaveSettings} className="space-y-6">
@@ -356,7 +356,7 @@ const AdminSettings = () => {
         </div>
 
         <div className="flex justify-end">
-          <Button type="submit" className="btn-sacred" disabled={isSaving}>
+          <Button type="submit" className="bg-white text-[#212020] hover:bg-white/90" disabled={isSaving}>
             {isSaving ? 'Saving...' : 'Save Settings'}
           </Button>
         </div>

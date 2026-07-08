@@ -49,9 +49,9 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="h-screen overflow-hidden flex bg-background relative">
+    <div className="h-screen overflow-hidden flex bg-[#212020] relative">
       <AdminBackground className="z-0" />
-      <div className="absolute inset-0 bg-black/60 z-0" aria-hidden="true" />
+      <div className="absolute inset-0 bg-[#212020]/58 z-0" aria-hidden="true" />
       <div className="relative z-10 flex w-full">
       {/* Mobile Overlay */}
       {mobileOpen && (
@@ -64,7 +64,7 @@ const AdminLayout = () => {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 h-full bg-sidebar z-50 transition-all duration-300",
+          "fixed left-0 top-0 h-full bg-[#212020] z-[60] transition-all duration-300 shadow-[10px_0_34px_-28px_rgba(255,255,255,0.4)]",
           "lg:relative lg:translate-x-0",
           collapsed ? "w-20" : "w-64",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
@@ -72,31 +72,31 @@ const AdminLayout = () => {
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border">
+          <div className="flex items-center justify-between h-16 px-4 border-b border-[#90878E]/30">
             {!collapsed && (
               <Link to="/admin/dashboard" className="flex items-center gap-2">
                 {appSettings.logoUrl ? (
                   <img
                     src={appSettings.logoUrl}
                     alt={`${appSettings.appName} logo`}
-                    className="h-7 w-7 rounded-full object-cover border border-sidebar-border"
+                    className="h-7 w-7 rounded-full object-cover border border-[#90878E]/40"
                   />
                 ) : null}
-                <span className="text-xl font-serif font-bold text-sidebar-foreground">
+                <span className="text-xl font-serif font-bold text-white">
                   {appSettings.appName || 'Brindarani'}
                 </span>
-                <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded">
+                <span className="text-xs bg-white/10 text-white px-2 py-0.5 rounded border border-[#90878E]/30">
                   Admin
                 </span>
               </Link>
             )}
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="hidden lg:flex p-2 hover:bg-sidebar-accent rounded-lg transition-colors"
+              className="hidden lg:flex p-2 hover:bg-[#90878E]/22 rounded-lg transition-colors"
             >
               <ChevronLeft 
                 className={cn(
-                  "text-sidebar-foreground transition-transform",
+                  "text-white transition-transform",
                   collapsed && "rotate-180"
                 )} 
                 size={20} 
@@ -104,7 +104,7 @@ const AdminLayout = () => {
             </button>
             <button
               onClick={() => setMobileOpen(false)}
-              className="lg:hidden p-2 text-sidebar-foreground"
+              className="lg:hidden p-2 text-white"
             >
               <X size={20} />
             </button>
@@ -122,13 +122,13 @@ const AdminLayout = () => {
                       onClick={() => setMobileOpen(false)}
                       className={cn(
                         "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all",
-                        "hover:bg-sidebar-accent",
+                        "hover:bg-[#90878E]/18",
                         isActive 
-                          ? "bg-sidebar-primary text-sidebar-primary-foreground" 
-                          : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
+                          ? "bg-white text-[#212020]" 
+                          : "text-white hover:text-white"
                       )}
                     >
-                      <item.icon size={20} />
+                      <item.icon size={20} className={isActive ? "text-[#212020]" : "text-white"} />
                       {!collapsed && <span className="font-medium">{item.label}</span>}
                     </Link>
                   </li>
@@ -138,15 +138,15 @@ const AdminLayout = () => {
           </nav>
 
           {/* Logout */}
-          <div className="p-3 border-t border-sidebar-border">
+          <div className="p-3 border-t border-[#90878E]/30">
             <button
               onClick={handleLogout}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors w-full",
-                "text-sidebar-foreground/80 hover:text-destructive hover:bg-sidebar-accent"
+                "text-white hover:text-white hover:bg-[#90878E]/18"
               )}
             >
-              <LogOut size={20} />
+              <LogOut size={20} className="text-white" />
               {!collapsed && <span className="font-medium">Logout</span>}
             </button>
           </div>
@@ -156,11 +156,11 @@ const AdminLayout = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {/* Top Bar */}
-        <header className="h-16 bg-card border-b border-border flex items-center justify-between px-4 lg:px-6">
+        <header className="h-16 bg-white/95 border-b border-[#90878E]/25 flex items-center justify-between px-4 text-[#212020] shadow-[0_10px_30px_-26px_rgba(33,32,32,0.7)] lg:px-6">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setMobileOpen(true)}
-              className="lg:hidden p-2 -ml-2"
+              className="lg:hidden p-2 -ml-2 text-[#212020]"
             >
               <Menu size={24} />
             </button>
@@ -174,8 +174,8 @@ const AdminLayout = () => {
               <p className="text-sm font-medium">{auth.user?.name || 'Admin'}</p>
               <p className="text-xs text-muted-foreground">{auth.user?.email}</p>
             </div>
-            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <span className="text-primary font-medium">
+            <div className="h-10 w-10 rounded-full bg-[#212020] flex items-center justify-center">
+              <span className="text-white font-medium">
                 {auth.user?.name?.charAt(0) || 'A'}
               </span>
             </div>
@@ -183,7 +183,7 @@ const AdminLayout = () => {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 lg:p-6 overflow-y-auto scroll-smooth min-h-0">
+        <main className="flex-1 p-4 text-white lg:p-6 overflow-y-auto scroll-smooth min-h-0 [&_h1]:text-3xl [&_h1]:text-white [&_h2]:text-xl [&_h2]:text-white">
           <Outlet />
         </main>
       </div>

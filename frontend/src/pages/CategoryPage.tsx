@@ -101,7 +101,7 @@ const CategoryPage = () => {
           </div>
 
           {categoryProducts.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
               {categoryProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}

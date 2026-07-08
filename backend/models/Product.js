@@ -16,8 +16,8 @@ const productSchema = new mongoose.Schema({
   isTrending: { type: Boolean, default: false },
   isLatest: { type: Boolean, default: false },
   isVrindavanSpecial: { type: Boolean, default: false },
-  rating: { type: Number, default: 0 },
-  reviews: { type: Number, default: 0 },
+  rating: { type: Number, default: 0, min: 0, max: 5 },
+  reviews: { type: Number, default: 0, min: 0 },
 }, { timestamps: true });
 
 // Text index for search

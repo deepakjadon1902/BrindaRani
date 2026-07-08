@@ -1,34 +1,18 @@
 import { cn } from '@/lib/utils';
-import { useEffect, useState } from 'react';
-
-const ADMIN_BG_IMAGES = [
-  '/admin-bg/krishna-01.png',
-  '/admin-bg/krishna-02.jpg',
-  '/admin-bg/krishna-03.jpg',
-  '/admin-bg/krishna-04.png',
-  '/admin-bg/krishna-05.png',
-];
 
 type AdminBackgroundProps = {
   className?: string;
   intervalMs?: number;
 };
 
-const AdminBackground = ({ className, intervalMs = 5000 }: AdminBackgroundProps) => {
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setIndex((current) => (current + 1) % ADMIN_BG_IMAGES.length);
-    }, intervalMs);
-    return () => clearInterval(id);
-  }, [intervalMs]);
-
+const AdminBackground = ({ className }: AdminBackgroundProps) => {
   return (
     <div
       aria-hidden="true"
-      className={cn("absolute inset-0 bg-cover bg-center transition-opacity duration-1000", className)}
-      style={{ backgroundImage: `url(${ADMIN_BG_IMAGES[index]})` }}
+      className={cn(
+        "absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(255,255,255,0.11),transparent_24%),radial-gradient(circle_at_82%_0%,rgba(144,135,142,0.32),transparent_34%),linear-gradient(135deg,#212020_0%,#212020_62%,#90878E_100%)]",
+        className
+      )}
     />
   );
 };

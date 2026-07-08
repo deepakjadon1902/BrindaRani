@@ -136,9 +136,12 @@ const AdminCategories = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Categories</h1>
-        <Button className="btn-sacred" onClick={openCreate}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="font-bold">Categories</h1>
+          <p className="mt-1 text-base text-white/62">Organize storefront navigation and subcategory groups</p>
+        </div>
+        <Button className="bg-white text-[#212020] hover:bg-white/90" onClick={openCreate}>
           <Plus size={18} className="mr-2" />
           Add Category
         </Button>
@@ -155,13 +158,13 @@ const AdminCategories = () => {
             ) : (
               categories.map((category) => (
                 <tr key={category.id}>
-                  <td className="font-medium">{category.name}</td>
+                  <td className="font-semibold">{category.name}</td>
                   <td>
                     {category.image ? (
                       <img
                         src={category.image}
                         alt={category.name}
-                        className="w-12 h-12 rounded-md object-cover border border-border"
+                        className="h-12 w-12 rounded-lg border border-white/10 bg-white object-cover"
                         onError={(e) => {
                           const img = e.currentTarget;
                           if (img.src.endsWith('/placeholder.svg')) return;
@@ -175,10 +178,10 @@ const AdminCategories = () => {
                   <td className="text-muted-foreground">{(category.subcategories || []).join(', ') || '-'}</td>
                   <td>
                     <div className="flex gap-2">
-                      <button onClick={() => openEdit(category)} className="p-2 hover:bg-muted rounded-lg">
+                      <button onClick={() => openEdit(category)} className="rounded-lg p-2 text-white/75 hover:bg-white/10 hover:text-white" aria-label={`Edit ${category.name}`}>
                         <Edit2 size={16} />
                       </button>
-                      <button onClick={() => handleDelete(category.id)} className="p-2 hover:bg-destructive/10 rounded-lg text-destructive">
+                      <button onClick={() => handleDelete(category.id)} className="rounded-lg p-2 text-[#ff7d7d] hover:bg-[#ff7d7d]/10" aria-label={`Delete ${category.name}`}>
                         <Trash2 size={16} />
                       </button>
                     </div>

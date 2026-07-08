@@ -41,24 +41,24 @@ const AdminLoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-sidebar p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-[#212020] p-4 relative overflow-hidden">
       <AdminBackground className="z-0" />
-      <div className="absolute inset-0 bg-black/60 z-0" aria-hidden="true" />
+      <div className="absolute inset-0 bg-[#212020]/45 z-0" aria-hidden="true" />
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           {appSettings.logoUrl ? (
             <img
               src={appSettings.logoUrl}
               alt={`${appSettings.appName} logo`}
-              className="h-12 w-12 rounded-full object-cover border border-sidebar-border mx-auto mb-3"
+              className="h-12 w-12 rounded-full object-cover border border-[#90878E]/40 mx-auto mb-3"
             />
           ) : null}
-          <h1 className="text-3xl font-serif font-bold text-sidebar-foreground">
+          <h1 className="text-3xl font-serif font-bold text-white">
             {appSettings.appName || 'Brindarani'}
           </h1>
-          <p className="text-sidebar-foreground/60 mt-2">Admin Portal</p>
+          <p className="text-[#90878E] mt-2">Admin Portal</p>
         </div>
-        <div className="bg-card rounded-2xl p-8 shadow-large">
+        <div className="bg-white rounded-2xl p-8 text-[#212020] shadow-[0_24px_70px_-36px_rgba(255,255,255,0.45)]">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <Label>Email</Label>

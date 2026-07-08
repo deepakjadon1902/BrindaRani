@@ -19,6 +19,8 @@ interface ProductFormState {
   description: string;
   price: string;
   stock: string;
+  rating: string;
+  reviews: string;
   images: string[];
   isTrending: boolean;
   isLatest: boolean;
@@ -32,6 +34,8 @@ const emptyForm: ProductFormState = {
   description: '',
   price: '',
   stock: '',
+  rating: '0',
+  reviews: '0',
   images: [],
   isTrending: false,
   isLatest: false,
@@ -45,6 +49,8 @@ const productToForm = (product: Product): ProductFormState => ({
   description: product.description || '',
   price: String(product.sizes?.[0]?.price ?? ''),
   stock: String(product.sizes?.[0]?.stock ?? ''),
+  rating: String(product.rating ?? 0),
+  reviews: String(product.reviews ?? 0),
   images: product.images || [],
   isTrending: Boolean(product.isTrending),
   isLatest: Boolean(product.isLatest),
@@ -137,12 +143,22 @@ const AdminProducts = () => {
     }
     const price = Number(form.price);
     const stock = Number(form.stock);
+    const rating = Number(form.rating);
+    const reviews = Number(form.reviews);
     if (!Number.isFinite(price) || price <= 0) {
       toast.error('Price must be greater than 0');
       return;
     }
     if (!Number.isFinite(stock) || stock < 0) {
       toast.error('Stock cannot be negative');
+      return;
+    }
+    if (!Number.isFinite(rating) || rating < 0 || rating > 5) {
+      toast.error('Rating must be between 0 and 5');
+      return;
+    }
+    if (!Number.isInteger(reviews) || reviews < 0) {
+      toast.error('Reviews must be a whole number');
       return;
     }
 
@@ -168,6 +184,8 @@ const AdminProducts = () => {
       subcategory: form.subcategory.trim(),
       description: form.description.trim(),
       sizes: [{ size: 'Default', price, stock }],
+      rating,
+      reviews,
       images: imageUrls,
       isTrending: form.isTrending,
       isLatest: form.isLatest,
@@ -192,69 +210,101 @@ const AdminProducts = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Products</h1>
-        <Button className="btn-sacred" onClick={openCreate}>
+    <div className="space-y-6 text-white">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Products</h1>
+          <p className="mt-1 text-sm text-white/60">{filtered.length} products in your catalogue</p>
+        </div>
+        <Button className="bg-white text-[#212020] hover:bg-white/90" onClick={openCreate}>
           <Plus size={18} className="mr-2" />
           Add Product
         </Button>
       </div>
 
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-        <Input placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50" size={18} />
+        <Input
+          placeholder="Search products..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="h-11 border-[#90878E]/25 bg-[#212020]/80 pl-10 text-white placeholder:text-white/45 focus-visible:ring-[#90878E]"
+        />
       </div>
 
-      <div className="admin-card overflow-x-auto">
-        <table className="table-premium">
+      <div className="overflow-hidden rounded-2xl border border-[#90878E]/24 bg-[#212020] shadow-[0_24px_70px_-45px_rgba(255,255,255,0.35)]">
+        <table className="w-full min-w-[920px] border-collapse">
           <thead>
-            <tr><th>Product</th><th>Category</th><th>Price Range</th><th>Status</th><th>Actions</th></tr>
+            <tr className="border-b border-[#90878E]/18 bg-[#262525] text-left text-sm font-semibold text-white/70">
+              <th className="px-5 py-4">Product</th>
+              <th className="px-5 py-4">Category</th>
+              <th className="px-5 py-4">Price</th>
+              <th className="px-5 py-4">Rating</th>
+              <th className="px-5 py-4">Stock</th>
+              <th className="px-5 py-4">Status</th>
+              <th className="px-5 py-4 text-right">Actions</th>
+            </tr>
           </thead>
           <tbody>
             {isLoadingProducts ? (
-              <tr><td colSpan={5} className="text-center py-8 text-muted-foreground">Loading...</td></tr>
+              <tr><td colSpan={7} className="py-10 text-center text-white/60">Loading...</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={5} className="text-center py-8 text-muted-foreground">No products found</td></tr>
+              <tr><td colSpan={7} className="py-10 text-center text-white/60">No products found</td></tr>
             ) : (
-              filtered.map((product) => (
-                <tr key={product.id}>
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <img src={product.images[0] || '/placeholder.svg'} alt="" className="w-12 h-12 rounded-lg object-cover" />
-                      <span className="font-medium">{product.name}</span>
-                    </div>
-                  </td>
-                  <td>{product.category}</td>
-                  <td>
-                    Rs {Math.min(...product.sizes.map((s) => s.price))} - Rs {Math.max(...product.sizes.map((s) => s.price))}
-                  </td>
-                  <td>
-                    <div className="flex gap-1">
-                      {product.isTrending && <span className="badge-trending text-xs">Trending</span>}
-                      {product.isLatest && <span className="badge-new text-xs">New</span>}
-                      {product.isVrindavanSpecial && <span className="badge-vrindavan text-xs">Vrindavan Special</span>}
-                    </div>
-                  </td>
-                  <td>
-                    <div className="flex gap-2">
-                      <button onClick={() => openEdit(product)} className="p-2 hover:bg-muted rounded-lg">
-                        <Edit2 size={16} />
-                      </button>
-                      <button onClick={() => handleDelete(product.id)} className="p-2 hover:bg-destructive/10 rounded-lg text-destructive">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+              filtered.map((product, index) => {
+                const productPrices = product.sizes.map((s) => s.price);
+                const minPrice = Math.min(...productPrices);
+                const maxPrice = Math.max(...productPrices);
+                const totalStock = product.sizes.reduce((sum, size) => sum + size.stock, 0);
+                return (
+                  <tr key={product.id} className={`border-b border-[#90878E]/12 text-sm text-white transition-colors hover:bg-[#90878E]/14 ${index % 2 === 1 ? 'bg-[#2a2929]' : 'bg-[#212020]'}`}>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-3">
+                        <img src={product.images[0] || '/placeholder.svg'} alt="" className="h-10 w-10 rounded-lg border border-white/10 bg-white object-cover" />
+                        <span className="max-w-[260px] truncate font-semibold text-white">{product.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3 text-white/78">{product.category}</td>
+                    <td className="px-5 py-3 font-semibold text-white">
+                      {minPrice === maxPrice ? `INR ${minPrice}` : `INR ${minPrice} - ${maxPrice}`}
+                    </td>
+                    <td className="px-5 py-3">
+                      <span className="font-semibold text-white">★ {Number(product.rating || 0).toFixed(1)}</span>
+                      <span className="ml-1 text-white/55">({product.reviews || 0})</span>
+                    </td>
+                    <td className="px-5 py-3">
+                      <span className={totalStock > 0 ? 'font-semibold text-white' : 'font-semibold text-[#ff7d7d]'}>
+                        {totalStock > 0 ? 'In Stock' : 'Out of Stock'}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3">
+                      <div className="flex flex-wrap gap-1.5">
+                        {product.isTrending && <span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-[#212020]">Trending</span>}
+                        {product.isLatest && <span className="rounded-full border border-white/35 px-2.5 py-1 text-[10px] font-bold text-white">New</span>}
+                        {product.isVrindavanSpecial && <span className="rounded-full bg-[#90878E] px-2.5 py-1 text-[10px] font-bold text-white">Vrindavan Special</span>}
+                        {!product.isTrending && !product.isLatest && !product.isVrindavanSpecial && <span className="text-xs text-white/45">-</span>}
+                      </div>
+                    </td>
+                    <td className="px-5 py-3">
+                      <div className="flex justify-end gap-2">
+                        <button onClick={() => openEdit(product)} className="rounded-lg p-2 text-white/75 transition-colors hover:bg-white/10 hover:text-white" aria-label={`Edit ${product.name}`}>
+                          <Edit2 size={16} />
+                        </button>
+                        <button onClick={() => handleDelete(product.id)} className="rounded-lg p-2 text-[#ff7d7d] transition-colors hover:bg-[#ff7d7d]/10" aria-label={`Delete ${product.name}`}>
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingId ? 'Edit Product' : 'Add Product'}</DialogTitle>
           </DialogHeader>
@@ -303,6 +353,16 @@ const AdminProducts = () => {
               <div>
                 <Label>Stock</Label>
                 <Input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Rating Stars</Label>
+                <Input type="number" min="0" max="5" step="0.1" value={form.rating} onChange={(e) => setForm({ ...form, rating: e.target.value })} />
+              </div>
+              <div>
+                <Label>Review Count</Label>
+                <Input type="number" min="0" step="1" value={form.reviews} onChange={(e) => setForm({ ...form, reviews: e.target.value })} />
               </div>
             </div>
             <div>
