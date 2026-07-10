@@ -174,6 +174,21 @@ const saveWishlistForUser = (user: { id?: string; email?: string } | null, wishl
   }
 };
 
+const DATA_CACHE_MS = 5 * 60 * 1000;
+let productsLoadedAt = 0;
+let categoriesLoadedAt = 0;
+let settingsLoadedAt = 0;
+let usersLoadedAt = 0;
+let ordersLoadedAt = 0;
+let productsRequest: Promise<void> | null = null;
+let categoriesRequest: Promise<void> | null = null;
+let settingsRequest: Promise<void> | null = null;
+let usersRequest: Promise<void> | null = null;
+let ordersRequest: Promise<void> | null = null;
+
+const isFresh = (loadedAt: number) => loadedAt > 0 && Date.now() - loadedAt < DATA_CACHE_MS;
+const hasParams = (params?: Record<string, string>) => Boolean(params && Object.keys(params).length > 0);
+
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
@@ -258,20 +273,37 @@ export const useStore = create<StoreState>()(
       isLoadingProducts: false,
 
       fetchProducts: async (params?) => {
-        set({ isLoadingProducts: true });
-        try {
-          const data = await productsAPI.getAll(params);
-          set({ products: data.map(normalizeProduct) });
-        } catch (error) {
-          console.error('Fetch products error:', error);
-        } finally {
-          set({ isLoadingProducts: false });
+        const shouldBypassCache = hasParams(params);
+        if (!shouldBypassCache && get().products.length > 0 && isFresh(productsLoadedAt)) return;
+        if (!shouldBypassCache && productsRequest) return productsRequest;
+
+        const request = (async () => {
+          set({ isLoadingProducts: true });
+          try {
+            const data = await productsAPI.getAll(params);
+            set({ products: data.map(normalizeProduct) });
+            if (!shouldBypassCache) productsLoadedAt = Date.now();
+          } catch (error) {
+            console.error('Fetch products error:', error);
+          } finally {
+            set({ isLoadingProducts: false });
+          }
+        })();
+
+        if (!shouldBypassCache) {
+          productsRequest = request.finally(() => {
+            productsRequest = null;
+          });
+          return productsRequest;
         }
+
+        return request;
       },
 
       addProduct: async (product) => {
         try {
           const created = await productsAPI.create(product);
+          productsLoadedAt = Date.now();
           set(state => ({ products: [...state.products, normalizeProduct(created)] }));
         } catch (error) {
           console.error('Add product error:', error);
@@ -292,6 +324,7 @@ export const useStore = create<StoreState>()(
       updateProduct: async (id, productUpdate) => {
         try {
           const updated = await productsAPI.update(id, productUpdate);
+          productsLoadedAt = Date.now();
           set(state => ({
             products: state.products.map(p => p.id === id ? normalizeProduct(updated) : p),
           }));
@@ -309,6 +342,7 @@ export const useStore = create<StoreState>()(
       deleteProduct: async (id) => {
         try {
           await productsAPI.delete(id);
+          productsLoadedAt = Date.now();
           set(state => ({
             products: state.products.filter(p => p.id !== id),
           }));
@@ -327,18 +361,29 @@ export const useStore = create<StoreState>()(
       categories: [],
 
       fetchCategories: async () => {
-        try {
-          const data = await categoriesAPI.getAll();
-          set({ categories: data.map(normalizeCategory) });
-        } catch (error) {
-          console.error('Fetch categories error:', error);
-          set({ categories: [] });
-        }
+        if (get().categories.length > 0 && isFresh(categoriesLoadedAt)) return;
+        if (categoriesRequest) return categoriesRequest;
+
+        categoriesRequest = (async () => {
+          try {
+            const data = await categoriesAPI.getAll();
+            set({ categories: data.map(normalizeCategory) });
+            categoriesLoadedAt = Date.now();
+          } catch (error) {
+            console.error('Fetch categories error:', error);
+            set({ categories: [] });
+          }
+        })().finally(() => {
+          categoriesRequest = null;
+        });
+
+        return categoriesRequest;
       },
 
       addCategory: async (category) => {
         try {
           const created = await categoriesAPI.create(category);
+          categoriesLoadedAt = Date.now();
           set(state => ({ categories: [...state.categories, normalizeCategory(created)] }));
         } catch (error) {
           console.error('Add category error:', error);
@@ -349,6 +394,7 @@ export const useStore = create<StoreState>()(
       updateCategory: async (id, categoryUpdate) => {
         try {
           const updated = await categoriesAPI.update(id, categoryUpdate);
+          categoriesLoadedAt = Date.now();
           set(state => ({
             categories: state.categories.map(c => c.id === id ? normalizeCategory(updated) : c),
           }));
@@ -361,6 +407,7 @@ export const useStore = create<StoreState>()(
       deleteCategory: async (id) => {
         try {
           await categoriesAPI.delete(id);
+          categoriesLoadedAt = Date.now();
           set(state => ({
             categories: state.categories.filter(c => c.id !== id),
           }));
@@ -386,26 +433,36 @@ export const useStore = create<StoreState>()(
       },
 
       fetchAppSettings: async () => {
-        try {
-          const data = await settingsAPI.getPublic();
-          set({
-            appSettings: {
-              appName: data.appName || 'Brindarani',
-              motto: data.motto || '',
-              logoUrl: resolveAssetUrl(data.logoUrl),
-              faviconUrl: resolveAssetUrl(data.faviconUrl),
-              paymentEnabled: Boolean(data.paymentEnabled),
-              paymentProvider: data.paymentProvider || 'razorpay',
-              upiId: data.upiId || '',
-              shippingFee: Number.isFinite(data.shippingFee) ? data.shippingFee : 50,
-              freeShippingThreshold: Number.isFinite(data.freeShippingThreshold) ? data.freeShippingThreshold : 500,
-              notificationEmail: data.notificationEmail || '',
-              notificationWhatsapp: data.notificationWhatsapp || '',
-            },
-          });
-        } catch (error) {
-          console.error('Fetch settings error:', error);
-        }
+        if (isFresh(settingsLoadedAt)) return;
+        if (settingsRequest) return settingsRequest;
+
+        settingsRequest = (async () => {
+          try {
+            const data = await settingsAPI.getPublic();
+            set({
+              appSettings: {
+                appName: data.appName || 'Brindarani',
+                motto: data.motto || '',
+                logoUrl: resolveAssetUrl(data.logoUrl),
+                faviconUrl: resolveAssetUrl(data.faviconUrl),
+                paymentEnabled: Boolean(data.paymentEnabled),
+                paymentProvider: data.paymentProvider || 'razorpay',
+                upiId: data.upiId || '',
+                shippingFee: Number.isFinite(data.shippingFee) ? data.shippingFee : 50,
+                freeShippingThreshold: Number.isFinite(data.freeShippingThreshold) ? data.freeShippingThreshold : 500,
+                notificationEmail: data.notificationEmail || '',
+                notificationWhatsapp: data.notificationWhatsapp || '',
+              },
+            });
+            settingsLoadedAt = Date.now();
+          } catch (error) {
+            console.error('Fetch settings error:', error);
+          }
+        })().finally(() => {
+          settingsRequest = null;
+        });
+
+        return settingsRequest;
       },
 
       updateAppSettings: async (settings) => {
@@ -417,6 +474,7 @@ export const useStore = create<StoreState>()(
           payload.faviconUrl = resolveAssetUrl(payload.faviconUrl);
         }
         const data = await settingsAPI.update(payload);
+        settingsLoadedAt = Date.now();
         set({
           appSettings: {
             appName: data.appName || 'Brindarani',
@@ -438,17 +496,28 @@ export const useStore = create<StoreState>()(
       users: [],
 
       fetchUsers: async () => {
-        try {
-          const data = await usersAPI.getAll();
-          set({ users: data.map(normalizeUser) });
-        } catch (error) {
-          console.error('Fetch users error:', error);
-        }
+        if (get().users.length > 0 && isFresh(usersLoadedAt)) return;
+        if (usersRequest) return usersRequest;
+
+        usersRequest = (async () => {
+          try {
+            const data = await usersAPI.getAll();
+            set({ users: data.map(normalizeUser) });
+            usersLoadedAt = Date.now();
+          } catch (error) {
+            console.error('Fetch users error:', error);
+          }
+        })().finally(() => {
+          usersRequest = null;
+        });
+
+        return usersRequest;
       },
 
       toggleUserBlock: async (id) => {
         try {
           const updated = await usersAPI.toggleBlock(id);
+          usersLoadedAt = Date.now();
           set(state => ({
             users: state.users.map(u => u.id === id ? normalizeUser(updated) : u),
           }));
@@ -462,17 +531,28 @@ export const useStore = create<StoreState>()(
       orders: [],
 
       fetchOrders: async () => {
-        try {
-          const data = await ordersAPI.getAll();
-          set({ orders: data.map(normalizeId) });
-        } catch (error) {
-          console.error('Fetch orders error:', error);
-        }
+        if (get().orders.length > 0 && isFresh(ordersLoadedAt)) return;
+        if (ordersRequest) return ordersRequest;
+
+        ordersRequest = (async () => {
+          try {
+            const data = await ordersAPI.getAll();
+            set({ orders: data.map(normalizeId) });
+            ordersLoadedAt = Date.now();
+          } catch (error) {
+            console.error('Fetch orders error:', error);
+          }
+        })().finally(() => {
+          ordersRequest = null;
+        });
+
+        return ordersRequest;
       },
 
       updateOrderStatus: async (id, status) => {
         try {
           const updated = await ordersAPI.updateStatus(id, status);
+          ordersLoadedAt = Date.now();
           set(state => ({
             orders: state.orders.map(o => o.id === id ? normalizeId(updated) : o),
           }));
@@ -485,6 +565,7 @@ export const useStore = create<StoreState>()(
       addOrder: async (orderData) => {
         try {
           const order = await ordersAPI.create(orderData);
+          ordersLoadedAt = Date.now();
           set(state => ({ orders: [normalizeId(order), ...state.orders] }));
         } catch (error) {
           console.error('Add order error:', error);

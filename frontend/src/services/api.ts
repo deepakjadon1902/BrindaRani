@@ -6,6 +6,9 @@ const isProduction = window.location.hostname !== 'localhost' && window.location
 const API_BASE_URL = import.meta.env.VITE_API_URL || 
   (isProduction ? 'https://brindarani.onrender.com/api' : 'http://localhost:5000/api');
 const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
+const PUBLIC_CACHE_MS = 60 * 1000;
+let publicHeroSlidesCache: { data: any; loadedAt: number } | null = null;
+let publicHeroSlidesRequest: Promise<any> | null = null;
 
 // Token management
 let authToken: string | null = localStorage.getItem('Brindarani-token');
@@ -195,11 +198,37 @@ export const ordersAPI = {
 
 // ========== HERO SLIDES API ==========
 export const heroSlidesAPI = {
-  getPublic: () => apiFetch(`/hero-slides?refresh=${Date.now()}`, { cache: 'no-store' }),
+  getPublic: () => {
+    if (publicHeroSlidesCache && Date.now() - publicHeroSlidesCache.loadedAt < PUBLIC_CACHE_MS) {
+      return Promise.resolve(publicHeroSlidesCache.data);
+    }
+    if (publicHeroSlidesRequest) return publicHeroSlidesRequest;
+
+    publicHeroSlidesRequest = apiFetch('/hero-slides').then((data) => {
+      publicHeroSlidesCache = { data, loadedAt: Date.now() };
+      return data;
+    }).finally(() => {
+      publicHeroSlidesRequest = null;
+    });
+
+    return publicHeroSlidesRequest;
+  },
   getAdmin: () => apiFetch('/hero-slides/admin'),
-  create: (data: Record<string, any>) => apiFetch('/hero-slides', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: string, data: Record<string, any>) => apiFetch(`/hero-slides/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id: string) => apiFetch(`/hero-slides/${id}`, { method: 'DELETE' }),
+  create: (data: Record<string, any>) =>
+    apiFetch('/hero-slides', { method: 'POST', body: JSON.stringify(data) }).then((created) => {
+      publicHeroSlidesCache = null;
+      return created;
+    }),
+  update: (id: string, data: Record<string, any>) =>
+    apiFetch(`/hero-slides/${id}`, { method: 'PUT', body: JSON.stringify(data) }).then((updated) => {
+      publicHeroSlidesCache = null;
+      return updated;
+    }),
+  delete: (id: string) =>
+    apiFetch(`/hero-slides/${id}`, { method: 'DELETE' }).then((deleted) => {
+      publicHeroSlidesCache = null;
+      return deleted;
+    }),
 };
 
 // ========== PAYMENT API (Razorpay) ==========
