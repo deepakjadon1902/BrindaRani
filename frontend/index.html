@@ -40,6 +40,7 @@
         const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
         const API_BASE = isProduction ? 'https://brindarani.onrender.com' : 'http://localhost:5000';
         const SETTINGS_URL = API_BASE + '/api/settings';
+        const SITE_URL = isProduction ? 'https://brindarani.com' : window.location.origin;
 
         fetch(SETTINGS_URL)
           .then(res => res.json())
@@ -48,7 +49,7 @@
             const motto = (settings.motto || '').trim();
             const logoUrl = settings.logoUrl ? (settings.logoUrl.startsWith('http') ? settings.logoUrl : API_BASE + settings.logoUrl) : '';
             const faviconUrl = settings.faviconUrl ? (settings.faviconUrl.startsWith('http') ? settings.faviconUrl : API_BASE + settings.faviconUrl) : '';
-            const pageUrl = window.location.href;
+            const pageUrl = SITE_URL + (window.location.pathname === '/' ? '/' : window.location.pathname);
 
             // Set title
             const title = 'Shop Pure Tulsi Mala, Radha Krishna Accessories & Pooja Essentials';

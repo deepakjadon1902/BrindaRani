@@ -7,6 +7,7 @@ const DEFAULT_TITLE = 'Shop Pure Tulsi Mala, Radha Krishna Accessories & Pooja E
 const DEFAULT_DESCRIPTION = 'Brindarani offers authentic Tulsi Kanthi Mala, japa mala, Radha Krishna accessories, pooja essentials, and devotional products for Krishna bhakti.';
 const DEFAULT_KEYWORDS = 'Tulsi Mala, Tulsi Kanthi Mala, japa mala, Radha Krishna accessories, pooja essentials, Krishna bhakti, devotional products, Brindarani';
 const DEFAULT_SITE_NAME = 'Brindarani';
+const CANONICAL_SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://brindarani.com').replace(/\/+$/, '');
 
 const pageMetaByPath: Record<string, { title: string; description: string }> = {
   '/': { title: DEFAULT_TITLE, description: DEFAULT_DESCRIPTION },
@@ -58,6 +59,12 @@ const updateTitle = (title: string) => {
   document.title = title;
 };
 
+const getCanonicalUrl = (pathname: string) => {
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const origin = isLocalhost ? window.location.origin : CANONICAL_SITE_URL;
+  return `${origin}${pathname === '/' ? '/' : pathname}`;
+};
+
 const AppMetaUpdater = () => {
   const location = useLocation();
   const { appSettings, fetchAppSettings, products, fetchProducts, isLoadingProducts } = useStore();
@@ -77,7 +84,7 @@ const AppMetaUpdater = () => {
     const name = appSettings.appName || DEFAULT_SITE_NAME;
     const logo = resolveAssetUrl(appSettings.logoUrl || '');
     const favicon = resolveAssetUrl(appSettings.faviconUrl || '');
-    const pageUrl = `${window.location.origin}${location.pathname}`;
+    const pageUrl = getCanonicalUrl(location.pathname);
     const productMatch = matchPath('/product/:id', location.pathname);
     const product = productMatch?.params.id
       ? products.find((item) => item.id === productMatch.params.id)

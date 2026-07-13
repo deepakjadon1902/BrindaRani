@@ -104,6 +104,12 @@ const normalizeSiteUrl = () => (
   'https://brindarani.com'
 ).replace(/\/+$/, '');
 
+const normalizeApiPublicUrl = () => (
+  process.env.API_PUBLIC_URL ||
+  process.env.BACKEND_URL ||
+  'https://brindarani.onrender.com'
+).replace(/\/+$/, '');
+
 const escapeXml = (value) => String(value || '')
   .replace(/&/g, '&amp;')
   .replace(/</g, '&lt;')
@@ -111,14 +117,85 @@ const escapeXml = (value) => String(value || '')
   .replace(/"/g, '&quot;')
   .replace(/'/g, '&apos;');
 
-const sitemapEntry = ({ loc, lastmod, changefreq, priority }) => [
+const publicPageRoutes = [
+  { path: '/', changefreq: 'daily', priority: '1.0' },
+  { path: '/products', changefreq: 'daily', priority: '0.9' },
+  { path: '/about', changefreq: 'monthly', priority: '0.6' },
+  { path: '/contact', changefreq: 'monthly', priority: '0.5' },
+  { path: '/custom-design', changefreq: 'monthly', priority: '0.6' },
+];
+
+const formatLastmod = (value) => {
+  const date = value ? new Date(value) : new Date();
+  return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
+};
+
+const sitemapEntry = ({ loc, lastmod, changefreq, priority, images = [] }) => [
   '  <url>',
   `    <loc>${escapeXml(loc)}</loc>`,
-  lastmod ? `    <lastmod>${new Date(lastmod).toISOString()}</lastmod>` : '',
+  lastmod ? `    <lastmod>${formatLastmod(lastmod)}</lastmod>` : '',
   changefreq ? `    <changefreq>${changefreq}</changefreq>` : '',
   priority ? `    <priority>${priority}</priority>` : '',
+  ...images.filter(Boolean).map((image) => [
+    '    <image:image>',
+    `      <image:loc>${escapeXml(image.loc)}</image:loc>`,
+    image.title ? `      <image:title>${escapeXml(image.title)}</image:title>` : '',
+    '    </image:image>',
+  ].filter(Boolean).join('\n')),
   '  </url>',
 ].filter(Boolean).join('\n');
+
+const absoluteAssetUrl = (siteUrl, value) => {
+  if (!value || typeof value !== 'string') return '';
+  const normalized = value.trim().replace(/\\/g, '/');
+  if (!normalized || normalized.startsWith('data:')) return '';
+  if (normalized.startsWith('http://') || normalized.startsWith('https://')) return normalized;
+  if (normalized.startsWith('/uploads/')) return `${normalizeApiPublicUrl()}${normalized}`;
+  if (normalized.startsWith('/')) return `${siteUrl}${normalized}`;
+  if (normalized.startsWith('uploads/')) return `${normalizeApiPublicUrl()}/${normalized}`;
+  return `${siteUrl}/${normalized}`;
+};
+
+const buildSitemapXml = ({ siteUrl, products = [], categories = [], generatedAt = new Date() }) => {
+  const pageEntries = publicPageRoutes.map((page) => sitemapEntry({
+    loc: `${siteUrl}${page.path === '/' ? '/' : page.path}`,
+    lastmod: generatedAt,
+    changefreq: page.changefreq,
+    priority: page.priority,
+  }));
+
+  const categoryEntries = categories.map((category) => sitemapEntry({
+    loc: `${siteUrl}/category/${encodeURIComponent(category.name)}`,
+    lastmod: category.updatedAt || category.createdAt || generatedAt,
+    changefreq: 'weekly',
+    priority: '0.8',
+    images: category.image ? [{
+      loc: absoluteAssetUrl(siteUrl, category.image),
+      title: category.name,
+    }] : [],
+  }));
+
+  const productEntries = products.map((product) => sitemapEntry({
+    loc: `${siteUrl}/product/${product._id}`,
+    lastmod: product.updatedAt || product.createdAt || generatedAt,
+    changefreq: 'weekly',
+    priority: '0.8',
+    images: Array.isArray(product.images)
+      ? product.images.map((image) => ({
+          loc: absoluteAssetUrl(siteUrl, image),
+          title: product.name,
+        }))
+      : [],
+  }));
+
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
+    [...pageEntries, ...categoryEntries, ...productEntries].join('\n'),
+    '</urlset>',
+    '',
+  ].join('\n');
+};
 
 app.get('/robots.txt', (req, res) => {
   const siteUrl = normalizeSiteUrl();
@@ -143,47 +220,25 @@ app.get('/robots.txt', (req, res) => {
 });
 
 app.get('/sitemap.xml', async (req, res) => {
-  if (mongoose.connection.readyState !== 1) {
-    return res.status(503).type('text/plain').send('Sitemap temporarily unavailable: database is not connected.');
-  }
-
+  const siteUrl = normalizeSiteUrl();
+  const generatedAt = new Date();
+  res.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
   try {
-    const siteUrl = normalizeSiteUrl();
+    if (mongoose.connection.readyState !== 1) {
+      res.set('X-Sitemap-Warning', 'database-unavailable');
+      return res.type('application/xml').send(buildSitemapXml({ siteUrl, generatedAt }));
+    }
+
     const [products, categories] = await Promise.all([
-      Product.find({}, '_id updatedAt createdAt').sort({ updatedAt: -1 }).lean(),
-      Category.find({}, 'name updatedAt createdAt').sort({ name: 1 }).lean(),
+      Product.find({}, '_id name images updatedAt createdAt').sort({ updatedAt: -1 }).lean(),
+      Category.find({}, 'name image updatedAt createdAt').sort({ name: 1 }).lean(),
     ]);
 
-    const now = new Date().toISOString();
-    const urls = [
-      sitemapEntry({ loc: `${siteUrl}/`, lastmod: now, changefreq: 'daily', priority: '1.0' }),
-      sitemapEntry({ loc: `${siteUrl}/products`, lastmod: now, changefreq: 'daily', priority: '0.9' }),
-      sitemapEntry({ loc: `${siteUrl}/about`, lastmod: now, changefreq: 'monthly', priority: '0.6' }),
-      sitemapEntry({ loc: `${siteUrl}/contact`, lastmod: now, changefreq: 'monthly', priority: '0.5' }),
-      sitemapEntry({ loc: `${siteUrl}/custom-design`, lastmod: now, changefreq: 'monthly', priority: '0.6' }),
-      ...categories.map((category) => sitemapEntry({
-        loc: `${siteUrl}/category/${encodeURIComponent(category.name)}`,
-        lastmod: category.updatedAt || category.createdAt || now,
-        changefreq: 'weekly',
-        priority: '0.8',
-      })),
-      ...products.map((product) => sitemapEntry({
-        loc: `${siteUrl}/product/${product._id}`,
-        lastmod: product.updatedAt || product.createdAt || now,
-        changefreq: 'weekly',
-        priority: '0.8',
-      })),
-    ];
-
-    res.type('application/xml').send([
-      '<?xml version="1.0" encoding="UTF-8"?>',
-      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-      urls.join('\n'),
-      '</urlset>',
-      '',
-    ].join('\n'));
+    res.type('application/xml').send(buildSitemapXml({ siteUrl, products, categories, generatedAt }));
   } catch (error) {
-    res.status(500).type('text/plain').send(`Failed to generate sitemap: ${error.message}`);
+    console.error('Failed to generate dynamic sitemap:', error.message);
+    res.set('X-Sitemap-Warning', 'dynamic-generation-failed');
+    res.type('application/xml').send(buildSitemapXml({ siteUrl, generatedAt }));
   }
 });
 
