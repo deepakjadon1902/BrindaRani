@@ -40,7 +40,10 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
+app.use([
+  '/api/payment/webhook',
+  '/api/payment/razorpay/webhook',
+], express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '6mb' }));
 app.use(passport.initialize());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

@@ -8,6 +8,7 @@ const { sendOrderPlacedEmail, sendPaymentFailedEmail } = require('../utils/maile
 const { syncOrderRecords } = require('../utils/orderRecords');
 
 const router = express.Router();
+const RAZORPAY_WEBHOOK_EVENTS = new Set(['payment.captured', 'payment.failed']);
 
 const generateOrderCode = async () => {
   for (let attempt = 0; attempt < 10; attempt += 1) {
@@ -26,7 +27,15 @@ const getRazorpayClient = async () => {
   if (!key_id || !key_secret) {
     throw new Error('Razorpay keys are not configured');
   }
+  if (process.env.NODE_ENV === 'production' && key_id.startsWith('rzp_test_')) {
+    throw new Error('Razorpay is configured with a test key in production');
+  }
   return { client: new Razorpay({ key_id, key_secret }), keyId: key_id };
+};
+
+const appendStatusHistoryOnce = (order, status, note) => {
+  const alreadyLogged = order.statusHistory?.some((entry) => entry.status === status && entry.note === note);
+  if (!alreadyLogged) order.statusHistory.push({ status, note });
 };
 
 // POST /api/payment/create-order - Create Razorpay order
@@ -94,7 +103,7 @@ router.post('/verify', authenticate, async (req, res) => {
     } = req.body;
 
     const settings = await Settings.findOne();
-    const keySecret = settings?.paymentKeySecret || process.env.RAZORPAY_KEY_SECRET;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || settings?.paymentKeySecret;
     if (!keySecret) {
       return res.status(500).json({ message: 'Razorpay secret not configured' });
     }
@@ -122,7 +131,12 @@ router.post('/verify', authenticate, async (req, res) => {
     order.status = 'confirmed';
     order.paymentStatus = 'paid';
     order.razorpayPaymentId = razorpay_payment_id;
-    order.statusHistory.push({ status: 'confirmed', note: 'Payment signature verified; order confirmed' });
+    order.paymentDetails = {
+      ...order.paymentDetails,
+      verificationSource: order.paymentDetails?.verificationSource || 'checkout_signature',
+      signatureVerifiedAt: new Date(),
+    };
+    appendStatusHistoryOnce(order, 'confirmed', 'Payment signature verified; order confirmed');
     await order.save();
     await syncOrderRecords(order);
 
@@ -152,8 +166,7 @@ router.post('/verify', authenticate, async (req, res) => {
   }
 });
 
-// POST /api/payment/webhook - Razorpay is the source of truth for asynchronous payment updates
-router.post('/webhook', async (req, res) => {
+const handleRazorpayWebhook = async (req, res) => {
   try {
     const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
     if (!secret) return res.status(503).json({ message: 'Webhook secret not configured' });
@@ -164,34 +177,63 @@ router.post('/webhook', async (req, res) => {
       return res.status(401).json({ message: 'Invalid webhook signature' });
     }
     const payload = JSON.parse(rawBody.toString('utf8'));
+    if (!RAZORPAY_WEBHOOK_EVENTS.has(payload.event)) {
+      return res.json({ received: true });
+    }
+
     const payment = payload.payload?.payment?.entity;
     const razorpayOrderId = payment?.order_id;
     if (!razorpayOrderId) return res.json({ received: true });
     const order = await Order.findOne({ razorpayOrderId });
     if (!order) return res.json({ received: true });
 
-    if (payload.event === 'payment.captured' || payload.event === 'order.paid') {
+    if (payload.event === 'payment.captured') {
       const newlyPaid = order.paymentStatus !== 'paid';
       order.paymentStatus = 'paid';
       order.status = 'confirmed';
       order.razorpayPaymentId = payment.id || order.razorpayPaymentId;
-      order.statusHistory.push({ status: 'confirmed', note: 'Payment confirmed by Razorpay webhook' });
+      order.paymentDetails = {
+        ...order.paymentDetails,
+        verificationSource: 'razorpay_webhook',
+        webhookEvent: payload.event,
+        webhookPaymentId: payment.id || '',
+        capturedAt: new Date(),
+      };
+      appendStatusHistoryOnce(order, 'confirmed', 'Payment confirmed by Razorpay webhook');
       await order.save();
       await syncOrderRecords(order);
       if (newlyPaid) try { await sendOrderPlacedEmail(order); } catch (err) { console.error('Webhook email error:', err); }
     } else if (payload.event === 'payment.failed') {
+      const newlyFailed = order.paymentStatus !== 'failed';
       order.paymentStatus = 'failed';
       order.status = 'pending';
-      order.paymentDetails = { ...order.paymentDetails, failureReason: payment.error_description || 'Payment failed' };
+      order.razorpayPaymentId = payment.id || order.razorpayPaymentId;
+      order.paymentDetails = {
+        ...order.paymentDetails,
+        verificationSource: 'razorpay_webhook',
+        webhookEvent: payload.event,
+        webhookPaymentId: payment.id || '',
+        failureReason: payment.error_description || payment.error_reason || 'Payment failed',
+        failedAt: new Date(),
+      };
+      appendStatusHistoryOnce(order, 'pending', 'Payment failed by Razorpay webhook');
       await order.save();
       await syncOrderRecords(order);
-      try { await sendPaymentFailedEmail({ ...order.toObject(), reason: payment.error_description || 'Payment failed' }); } catch (err) { console.error('Failure email error:', err); }
+      if (newlyFailed) {
+        try { await sendPaymentFailedEmail({ ...order.toObject(), reason: payment.error_description || payment.error_reason || 'Payment failed' }); } catch (err) { console.error('Failure email error:', err); }
+      }
     }
     res.json({ received: true });
   } catch (error) {
     console.error('Razorpay webhook error:', error);
     res.status(400).json({ message: 'Invalid webhook payload' });
   }
-});
+};
+
+// POST /api/payment/razorpay/webhook - Razorpay source of truth for asynchronous payment updates.
+router.post('/razorpay/webhook', handleRazorpayWebhook);
+
+// Backward-compatible legacy endpoint.
+router.post('/webhook', handleRazorpayWebhook);
 
 module.exports = router;
