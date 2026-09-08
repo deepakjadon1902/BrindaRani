@@ -6,9 +6,7 @@ import {
   User, 
   Order,
   CartItem, 
-  WishlistItem,
-  categories as fallbackCategories,
-  products as fallbackProducts,
+  WishlistItem 
 } from '@/data/mockData';
 import { 
   authAPI, productsAPI, categoriesAPI, ordersAPI, usersAPI,
@@ -283,15 +281,10 @@ export const useStore = create<StoreState>()(
           set({ isLoadingProducts: true });
           try {
             const data = await productsAPI.getAll(params);
-            const normalizedProducts = Array.isArray(data) ? data.map(normalizeProduct) : [];
-            set({ products: normalizedProducts.length > 0 ? normalizedProducts : fallbackProducts });
+            set({ products: data.map(normalizeProduct) });
             if (!shouldBypassCache) productsLoadedAt = Date.now();
           } catch (error) {
             console.error('Fetch products error:', error);
-            if (!shouldBypassCache) {
-              set({ products: fallbackProducts });
-              productsLoadedAt = Date.now();
-            }
           } finally {
             set({ isLoadingProducts: false });
           }
@@ -374,13 +367,11 @@ export const useStore = create<StoreState>()(
         categoriesRequest = (async () => {
           try {
             const data = await categoriesAPI.getAll();
-            const normalizedCategories = Array.isArray(data) ? data.map(normalizeCategory) : [];
-            set({ categories: normalizedCategories.length > 0 ? normalizedCategories : fallbackCategories });
+            set({ categories: data.map(normalizeCategory) });
             categoriesLoadedAt = Date.now();
           } catch (error) {
             console.error('Fetch categories error:', error);
-            set({ categories: fallbackCategories });
-            categoriesLoadedAt = Date.now();
+            set({ categories: [] });
           }
         })().finally(() => {
           categoriesRequest = null;

@@ -3,19 +3,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { heroSlidesAPI, resolveAssetUrl } from '@/services/api';
-import { banners } from '@/data/mockData';
 
 type HeroSlide = { id: string; image: string; title: string; subtitle: string; tag?: string; link: string; ctaLabel?: string };
-
-const fallbackSlides: HeroSlide[] = banners.slice(0, 4).map((banner) => ({
-  id: banner.id,
-  image: banner.image,
-  title: banner.title,
-  subtitle: banner.subtitle,
-  tag: 'Brindarani',
-  link: banner.link,
-  ctaLabel: 'Shop Now',
-}));
 
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -27,8 +16,8 @@ const HeroSection = () => {
       if (Array.isArray(data) && data.length) {
         setSlides(data.map((slide) => ({ id: slide._id, image: resolveAssetUrl(slide.image), title: slide.title, subtitle: slide.description, tag: slide.tag, link: slide.ctaLink || '/products', ctaLabel: slide.ctaLabel || 'Shop Now' })));
         setCurrentSlide(0);
-      } else setSlides(fallbackSlides);
-    }).catch(() => setSlides(fallbackSlides)).finally(() => setIsLoading(false));
+      } else setSlides([]);
+    }).catch(() => setSlides([])).finally(() => setIsLoading(false));
     void loadSlides();
     window.addEventListener('focus', loadSlides);
     return () => window.removeEventListener('focus', loadSlides);
