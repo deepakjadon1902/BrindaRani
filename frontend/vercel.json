@@ -4,11 +4,11 @@
   "rewrites": [
     {
       "source": "/sitemap.xml",
-      "destination": "https://brindarani.onrender.com/sitemap.xml"
+      "destination": "https://brindarani-5cjh.onrender.com/sitemap.xml"
     },
     {
       "source": "/robots.txt",
-      "destination": "https://brindarani.onrender.com/robots.txt"
+      "destination": "https://brindarani-5cjh.onrender.com/robots.txt"
     },
     {
       "source": "/(.*)",

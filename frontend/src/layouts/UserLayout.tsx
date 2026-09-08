@@ -89,7 +89,11 @@ const UserLayout = () => {
                     alt={`${appSettings.appName} logo`}
                     className="h-14 w-14 rounded-full border border-border object-cover shadow-sm sm:h-16 sm:w-16 md:h-20 md:w-20"
                   />
-                ) : null}
+                ) : (
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full border border-[#eadbc8] bg-[#fff7eb] text-center font-serif text-[11px] font-bold leading-none text-primary shadow-sm sm:h-16 sm:w-16 sm:text-xs md:h-20 md:w-20 md:text-sm">
+                    Brindarani
+                  </span>
+                )}
               </Link>
             </div>
 

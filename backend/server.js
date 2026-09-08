@@ -14,10 +14,16 @@ const { syncOrderRecords } = require('./utils/orderRecords');
 const app = express();
 mongoose.set('bufferCommands', false);
 
-const allowedOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || '')
+const configuredOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || '')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
+
+const allowedOrigins = [
+  ...configuredOrigins,
+  'https://brindarani.com',
+  'https://www.brindarani.com',
+].filter((origin, index, list) => origin && list.indexOf(origin) === index);
 
 const isLocalDevelopmentOrigin = (origin) => {
   try {

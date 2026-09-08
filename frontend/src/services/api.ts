@@ -4,7 +4,7 @@
 // Production: use Render backend, Development: use localhost
 const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
 const API_BASE_URL = import.meta.env.VITE_API_URL || 
-  (isProduction ? 'https://brindarani.onrender.com/api' : 'http://localhost:5000/api');
+  (isProduction ? 'https://brindarani-5cjh.onrender.com/api' : 'http://localhost:5000/api');
 const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
 const PUBLIC_CACHE_MS = 60 * 1000;
 let publicHeroSlidesCache: { data: any; loadedAt: number } | null = null;
